@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebGIS — Prefeitura Municipal de Carpina</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.11.0/proj4.js"></script>
+<style>
+:root{
+  --pu:#7B2D8B;--pu-d:#5C1E6B;--pu-l:#9B4DAB;--pu-xl:#C47ED4;
+  --acc:#EDD9F5;--wh:#fff;--lg:#F4F4F7;--dg:#2D2D2D;--bd:#E0E0E0;
+  --sh:0 2px 10px rgba(0,0,0,.13);--sh2:0 6px 24px rgba(0,0,0,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;color:var(--dg);background:var(--lg)}
+
+/* ── HEADER ── */
+#hdr{
+  height:62px;background:linear-gradient(135deg,var(--pu-d) 0%,var(--pu) 55%,var(--pu-l) 100%);
+  color:var(--wh);display:flex;align-items:center;padding:0 18px;
+  justify-content:space-between;box-shadow:var(--sh2);position:relative;z-index:1100;
+  flex-shrink:0;
+}
+#hdr-l{display:flex;align-items:center;gap:12px}
+#hdr-logo{height:46px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.35);background:#fff}
+#hdr-title h1{font-size:17px;font-weight:700;letter-spacing:.2px;line-height:1.2}
+#hdr-title p{font-size:11.5px;opacity:.82;font-weight:400;margin-top:1px}
+#hdr-r{display:flex;align-items:center;gap:10px;font-size:12px;opacity:.9}
+#hdr-r i{font-size:14px}
+
+/* ── LAYOUT ── */
+#wrap{display:flex;height:calc(100vh - 62px - 26px);overflow:hidden;position:relative}
+
+/* ── SIDEBAR ── */
+#sb{
+  width:290px;flex-shrink:0;background:var(--wh);display:flex;flex-direction:column;
+  overflow:hidden;border-right:1px solid var(--bd);box-shadow:2px 0 8px rgba(0,0,0,.07);
+  z-index:600;transition:width .28s ease,min-width .28s ease;
+}
+#sb.closed{width:0;min-width:0}
+.sec{border-bottom:1px solid var(--bd)}
+.sec-h{
+  background:var(--lg);padding:9px 14px;font-size:10.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.9px;color:var(--pu);
+  display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;
+  transition:background .15s;
+}
+.sec-h:hover{background:var(--acc)}
+.sec-h .arr{margin-left:auto;transition:transform .2s}
+.sec-h.closed .arr{transform:rotate(-90deg)}
+.sec-b{padding:10px 14px;overflow:hidden;transition:max-height .25s ease}
+.sec-b.hidden{display:none!important;max-height:0!important;padding-top:0;padding-bottom:0}
+
+/* layer items */
+.lyr{display:flex;align-items:center;gap:9px;padding:7px 4px;border-radius:5px;cursor:pointer;transition:background .15s}
+.lyr:hover{background:var(--acc);padding-left:8px}
+.lyr input[type=checkbox]{width:15px;height:15px;accent-color:var(--pu);cursor:pointer;flex-shrink:0}
+.lyr-dot{width:16px;height:16px;border-radius:3px;border:1.5px solid rgba(0,0,0,.2);flex-shrink:0}
+.lyr-name{font-size:12.5px;line-height:1.3;flex:1}
+.lyr-action{margin-left:auto;background:transparent;border:none;color:#7c7c7c;cursor:pointer;width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.lyr-action:hover{background:rgba(123,45,139,.12);color:var(--pu)}
+.lyr-group{padding:6px 4px 2px;margin-top:2px}
+.lyr-child{margin-left:18px;padding:6px 4px}
+.lyr-child .lyr-name{font-size:12px}
+
+/* legend */
+.leg-row{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:12px}
+.leg-clr{width:22px;height:13px;border-radius:2px;flex-shrink:0}
+
+/* feature info */
+#fi-wrap{flex:1;overflow-y:auto}
+#fi-body{padding:10px 14px;font-size:12px}
+.fi-ph{color:#aaa;font-style:italic;text-align:center;padding:22px 10px}
+.fi-ph i{display:block;font-size:28px;margin-bottom:8px;color:#ddd}
+.fi-title{font-weight:700;font-size:13px;color:var(--pu);padding-bottom:6px;margin-bottom:8px;border-bottom:2px solid var(--pu)}
+.fi-tbl{width:100%;border-collapse:collapse}
+.fi-tbl tr:nth-child(even){background:var(--lg)}
+.fi-tbl td{padding:4px 6px;border-bottom:1px solid var(--bd);vertical-align:top;font-size:11.5px}
+.fi-tbl td:first-child{font-weight:600;color:var(--pu);width:44%;white-space:nowrap}
+
+/* muni info */
+.muni-row{padding:3px 0;font-size:12px;line-height:1.6}
+.muni-row strong{color:var(--pu)}
+
+/* ── TOGGLE BUTTON ── */
+#tog{
+  position:absolute;top:50%;transform:translateY(-50%);left:290px;
+  z-index:700;width:18px;height:44px;background:var(--pu);color:var(--wh);
+  border:none;border-radius:0 5px 5px 0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:11px;
+  box-shadow:3px 0 8px rgba(0,0,0,.2);transition:left .28s ease;
+}
+
+/* ── MAP ── */
+#mc{flex:1;position:relative;overflow:hidden}
+#map{width:100%;height:100%}
+
+/* ── TOOLBAR ── */
+#tb{position:absolute;top:12px;right:12px;z-index:900;display:flex;flex-direction:column;gap:5px}
+.tbtn{
+  width:34px;height:34px;background:var(--wh);border:1px solid var(--bd);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:var(--sh);font-size:13.5px;color:#444;transition:all .18s;
+}
+.tbtn:hover{background:var(--pu);color:var(--wh);border-color:var(--pu);transform:translateY(-1px);box-shadow:var(--sh2)}
+.tbtn.on{background:var(--pu);color:var(--wh);border-color:var(--pu)}
+.tb-div{height:1px;background:var(--bd);margin:2px 5px}
+
+/* ── BASEMAP PANEL ── */
+#bmp{
+  position:absolute;bottom:34px;left:12px;z-index:900;background:var(--wh);
+  border-radius:9px;box-shadow:var(--sh2);padding:10px 12px;border:1px solid var(--bd);
+}
+#bmp h4{font-size:10px;text-transform:uppercase;letter-spacing:.9px;color:var(--pu);margin-bottom:8px;font-weight:700}
+.bm-opts{display:flex;gap:7px}
+.bm-card{
+  cursor:pointer;border-radius:6px;overflow:hidden;border:2.5px solid transparent;
+  transition:border-color .18s;text-align:center;width:64px;
+}
+.bm-card.on{border-color:var(--pu)}
+.bm-card canvas{display:block;width:60px;height:44px}
+.bm-card span{
+  font-size:9.5px;padding:2px 0;display:block;background:var(--lg);color:#555;
+  font-weight:500;transition:background .18s,color .18s;
+}
+.bm-card.on span{background:var(--pu);color:#fff}
+
+/* ── STATUS BAR ── */
+#stb{
+  height:26px;background:var(--pu-d);color:rgba(255,255,255,.82);
+  padding:0 16px;font-size:10.5px;display:flex;align-items:center;gap:20px;
+  flex-shrink:0;
+}
+#stb span{display:flex;align-items:center;gap:5px}
+#stb .r{margin-left:auto}
+
+/* Leaflet overrides */
+.leaflet-popup-content-wrapper{border-radius:9px;box-shadow:var(--sh2)}
+.leaflet-popup-tip-container{margin-top:-1px}
+.lf-pop-title{font-weight:700;font-size:13px;color:var(--pu);border-bottom:2px solid var(--pu);padding-bottom:5px;margin-bottom:7px}
+.lf-pop-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px solid #f0f0f0}
+.lf-pop-k{font-weight:600;color:#666;margin-right:8px}
+.lf-pop-v{color:var(--dg)}
+.leaflet-control-scale-line{border-color:var(--pu)!important;color:var(--pu)!important;font-size:10px!important}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <div id="hdr-l">
+    <img id="hdr-logo" src="data:image/jpeg;base64,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" alt="Logo Carpina">
+    <div id="hdr-title">
+      <h1>WebGIS Municipal de Carpina</h1>
+      <p>Prefeitura Municipal de Carpina &bull; Pernambuco &bull; Sistema de Informações Geográficas</p>
+    </div>
+  </div>
+  <div id="hdr-r">
+    <i class="fa-solid fa-map-location-dot"></i>
+    <span>SIG Carpina &bull; PE</span>
+  </div>
+</header>
+
+<!-- BODY -->
+<div id="wrap">
+
+  <!-- SIDEBAR -->
+  <aside id="sb">
+
+    <!-- CAMADAS -->
+    <div class="sec">
+      <div class="sec-h" onclick="toggleSec('s-layers',this)">
+        <i class="fa-solid fa-layer-group"></i> Camadas
+        <i class="fa-solid fa-chevron-down arr"></i>
+      </div>
+      <div class="sec-b" id="s-layers">
+        <div class="lyr" onclick="toggleLayer('limites')">
+          <input type="checkbox" id="ck-lim" checked onclick="event.stopPropagation()" onchange="toggleLayer('limites', this)">
+          <div class="lyr-dot" style="background:rgba(123,45,139,.15);border-color:#7B2D8B"></div>
+          <span class="lyr-name">Limite Municipal (IBGE)</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('limites')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr" onclick="toggleLayer('lotes')">
+          <input type="checkbox" id="ck-lot" checked onclick="event.stopPropagation()" onchange="toggleLayer('lotes', this)">
+          <div class="lyr-dot" style="background:rgba(244,160,34,.3);border-color:#F4A022"></div>
+          <span class="lyr-name">Lotes — Cadastro IPTU</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('lotes')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr" onclick="toggleLayer('quadra')">
+          <input type="checkbox" id="ck-quadra" checked onclick="event.stopPropagation()" onchange="toggleLayer('quadra', this)">
+          <div class="lyr-dot" style="background:rgba(168,56,0,.15);border-color:#a83800"></div>
+          <span class="lyr-name">Quadra Viária</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('quadra')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr lyr-group" onclick="toggleSectorGroup(this)">
+          <input type="checkbox" id="ck-setores-group" checked onclick="event.stopPropagation()" onchange="toggleSectorGroup(this)">
+          <div class="lyr-dot" style="background:rgba(123,45,139,.12);border-color:#7B2D8B"></div>
+          <span class="lyr-name"><strong>Setores (agrupados)</strong></span>
+        </div>
+        <div class="lyr lyr-child" onclick="toggleLayer('setor01')">
+          <input type="checkbox" id="ck-setor01" checked onclick="event.stopPropagation()" onchange="toggleLayer('setor01', this)">
+          <div class="lyr-dot" style="background:rgba(37,99,235,.15);border-color:#2563EB"></div>
+          <span class="lyr-name">Setor 01</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('setor01')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr lyr-child" onclick="toggleLayer('setor02')">
+          <input type="checkbox" id="ck-setor02" checked onclick="event.stopPropagation()" onchange="toggleLayer('setor02', this)">
+          <div class="lyr-dot" style="background:rgba(124,43,191,.15);border-color:#7C3AED"></div>
+          <span class="lyr-name">Setor 02</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('setor02')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr lyr-child" onclick="toggleLayer('setor03')">
+          <input type="checkbox" id="ck-setor03" checked onclick="event.stopPropagation()" onchange="toggleLayer('setor03', this)">
+          <div class="lyr-dot" style="background:rgba(5,150,105,.15);border-color:#059669"></div>
+          <span class="lyr-name">Setor 03</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('setor03')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr lyr-child" onclick="toggleLayer('setor04')">
+          <input type="checkbox" id="ck-setor04" checked onclick="event.stopPropagation()" onchange="toggleLayer('setor04', this)">
+          <div class="lyr-dot" style="background:rgba(245,158,11,.15);border-color:#F59E0B"></div>
+          <span class="lyr-name">Setor 04</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('setor04')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr lyr-child" onclick="toggleLayer('setor05')">
+          <input type="checkbox" id="ck-setor05" checked onclick="event.stopPropagation()" onchange="toggleLayer('setor05', this)">
+          <div class="lyr-dot" style="background:rgba(220,38,38,.15);border-color:#DC2626"></div>
+          <span class="lyr-name">Setor 05</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('setor05')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr lyr-child" onclick="toggleLayer('setor06')">
+          <input type="checkbox" id="ck-setor06" checked onclick="event.stopPropagation()" onchange="toggleLayer('setor06', this)">
+          <div class="lyr-dot" style="background:rgba(15,118,110,.15);border-color:#0F766E"></div>
+          <span class="lyr-name">Setor 06</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('setor06')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+        <div class="lyr" onclick="toggleLayer('logradouros')">
+          <input type="checkbox" id="ck-logradouros" checked onclick="event.stopPropagation()" onchange="toggleLayer('logradouros', this)">
+          <div class="lyr-dot" style="background:rgba(75,85,99,.16);border-color:#4B5563"></div>
+          <span class="lyr-name">Logradouros</span>
+          <button class="lyr-action" type="button" onclick="event.stopPropagation(); zoomToLayer('logradouros')" title="Zoom para a camada">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFORMAÇÕES DA FEIÇÃO -->
+    <div class="sec" style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-bottom:none">
+      <div class="sec-h" style="cursor:default">
+        <i class="fa-solid fa-circle-info"></i> Informações da Feição
+      </div>
+      <div id="fi-wrap">
+        <div id="fi-body">
+          <div class="fi-ph">
+            <i class="fa-regular fa-hand-pointer"></i>
+            Clique em uma feição para ver detalhes
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOBRE O MUNICÍPIO -->
+    <div class="sec">
+      <div class="sec-h closed" onclick="toggleSec('s-muni',this)">
+        <i class="fa-solid fa-city"></i> Sobre Carpina
+        <i class="fa-solid fa-chevron-down arr"></i>
+      </div>
+      <div class="sec-b hidden" id="s-muni">
+        <div class="muni-row"><strong>Município:</strong> Carpina</div>
+        <div class="muni-row"><strong>UF:</strong> Pernambuco (PE)</div>
+        <div class="muni-row"><strong>Região:</strong> Nordeste</div>
+        <div class="muni-row"><strong>Área:</strong> 146,49 km²</div>
+        <div class="muni-row"><strong>Cód. IBGE:</strong> 2604007</div>
+        <div class="muni-row"><strong>RGI:</strong> Carpina</div>
+        <div class="muni-row" style="margin-top:6px;font-size:11px;color:#999;font-style:italic">Fonte: IBGE 2022</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- TOGGLE SIDEBAR -->
+  <button id="tog" title="Mostrar/ocultar painel" onclick="toggleSidebar()">
+    <i class="fa-solid fa-chevron-left" id="tog-icon"></i>
+  </button>
+
+  <!-- MAP CONTAINER -->
+  <div id="mc">
+    <div id="map"></div>
+
+    <!-- TOOLBAR -->
+    <div id="tb">
+      <div class="tbtn" onclick="map.zoomIn()" title="Aproximar"><i class="fa-solid fa-plus"></i></div>
+      <div class="tbtn" onclick="map.zoomOut()" title="Afastar"><i class="fa-solid fa-minus"></i></div>
+      <div class="tb-div"></div>
+      <div class="tbtn" onclick="fitMuni()" title="Centralizar no município"><i class="fa-solid fa-crosshairs"></i></div>
+      <div class="tbtn" onclick="toggleFullscreen(this)" title="Tela cheia" id="btn-fs"><i class="fa-solid fa-expand"></i></div>
+      <div class="tb-div"></div>
+      <div class="tbtn on" id="btn-coords" onclick="toggleCoords(this)" title="Coordenadas do cursor"><i class="fa-solid fa-location-dot"></i></div>
+    </div>
+
+    <!-- BASEMAP PANEL -->
+    <div id="bmp">
+      <h4><i class="fa-solid fa-map"></i>&nbsp; Mapa Base</h4>
+      <div class="bm-opts">
+        <div class="bm-card on" id="bm-osm" onclick="setBase('osm',this)" title="OpenStreetMap">
+          <canvas id="cv-osm" width="60" height="44"></canvas><span>Ruas</span>
+        </div>
+        <div class="bm-card" id="bm-sat" onclick="setBase('sat',this)" title="Esri World Imagery">
+          <canvas id="cv-sat" width="60" height="44"></canvas><span>Satélite</span>
+        </div>
+        <div class="bm-card" id="bm-topo" onclick="setBase('topo',this)" title="OpenTopoMap">
+          <canvas id="cv-topo" width="60" height="44"></canvas><span>Topográfico</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div id="stb">
+  <span><i class="fa-solid fa-location-crosshairs"></i><span id="coords-txt">Mova o cursor sobre o mapa</span></span>
+  <span><i class="fa-solid fa-layer-group"></i> 2 camadas ativas</span>
+  <span><i class="fa-solid fa-database"></i> IBGE / IPTU Carpina</span>
+  <span class="r"><i class="fa-solid fa-code"></i>&nbsp; WebGIS &copy; Prefeitura de Carpina 2024</span>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────
+const LIMITES = {"type":"FeatureCollection","name":"Limites_Carpina_IBGE","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"CD_MUN":"2604007","NM_MUN":"Carpina","CD_RGI":"260006","NM_RGI":"Carpina","CD_RGINT":"2601","NM_RGINT":"Recife","CD_UF":"26","NM_UF":"Pernambuco","SIGLA_UF":"PE","CD_REGIAO":"2","NM_REGIAO":"Nordeste","SIGLA_RG":"NE","CD_CONCURB":null,"NM_CONCURB":null,"AREA_KM2":146.494},"geometry":{"type":"MultiPolygon","coordinates":[[[[-35.238964399999901,-7.88868839999998],[-35.240157399999902,-7.88820369999996],[-35.240585699999897,-7.88800059999994],[-35.2409701999999,-7.88769959999996],[-35.2414635,-7.88725869999996],[-35.2418018,-7.886476],[-35.242033799999902,-7.88616919999993],[-35.2427693,-7.88592739999996],[-35.243485,-7.88584869999994],[-35.2443463,-7.88586439999995],[-35.2451447,-7.88592739999996],[-35.246186899999898,-7.88603749999993],[-35.246686399999902,-7.88612009999997],[-35.248489,-7.88645209999993],[-35.249384399999897,-7.886596],[-35.250112,-7.88674539999994],[-35.2514530999999,-7.88704039999993],[-35.252294699999901,-7.88714259999995],[-35.2528801,-7.88725689999995],[-35.253262199999902,-7.88733139999994],[-35.254831399999901,-7.88762049999997],[-35.2555158,-7.88784469999996],[-35.2556187,-7.88789389999994],[-35.2561411,-7.88814359999998],[-35.2570378,-7.88839529999996],[-35.258162599999899,-7.888765],[-35.258850799999898,-7.88898219999993],[-35.2592953,-7.88900579999995],[-35.2598498,-7.88898619999998],[-35.2606521,-7.88903339999996],[-35.2613286,-7.88920639999998],[-35.2626304,-7.88978649999996],[-35.263413,-7.89004609999995],[-35.2650922999999,-7.890813],[-35.2659183,-7.89115519999996],[-35.266811,-7.89147859999997],[-35.267668399999899,-7.89143929999994],[-35.2683881,-7.89144319999997],[-35.2691747,-7.89156519999995],[-35.269469699999902,-7.89156519999995],[-35.269965199999902,-7.89133709999993],[-35.270916999999898,-7.890814],[-35.272293499999897,-7.89004309999996],[-35.2732920999999,-7.88957029999995],[-35.2732938669999,-7.88956946699994],[-35.2732963999999,-7.88956819999993],[-35.2741144,-7.88900979999994],[-35.275105499999903,-7.88822709999994],[-35.276628899999899,-7.88683619999995],[-35.2770719,-7.88643179999997],[-35.277661899999899,-7.88582219999995],[-35.2780827,-7.88521649999996],[-35.2783375,-7.88450829999994],[-35.2785153,-7.884014],[-35.2785153,-7.88344369999993],[-35.2796637,-7.88119219999993],[-35.2802222,-7.87977339999998],[-35.280430599999903,-7.87901039999997],[-35.280623299999903,-7.87836149999993],[-35.281095299999897,-7.87692789999994],[-35.2812526,-7.87635369999998],[-35.281465,-7.87586309999995],[-35.2818268,-7.87541079999994],[-35.2822555,-7.87497029999997],[-35.282640899999897,-7.87464779999993],[-35.283128599999898,-7.87403729999994],[-35.2836674,-7.87364789999998],[-35.284335999999897,-7.87343549999997],[-35.2849141,-7.87331749999993],[-35.2854962,-7.87323889999993],[-35.286164799999902,-7.87326049999996],[-35.2869317,-7.87326839999997],[-35.2884812,-7.87339029999993],[-35.2890083,-7.87339419999995],[-35.2897525,-7.87357079999992],[-35.2902548,-7.87225169999994],[-35.290315399999898,-7.87018549999993],[-35.289480599999898,-7.86799029999997],[-35.2866773,-7.86379359999995],[-35.286013399999902,-7.85998839999996],[-35.2846612,-7.85728309999996],[-35.28383,-7.85378039999995],[-35.283769,-7.85352339999997],[-35.2837691,-7.84750759999997],[-35.2838065,-7.84750519999994],[-35.2840340999999,-7.84749069999998],[-35.2857974,-7.84737839999997],[-35.2867347,-7.84687549999995],[-35.2865214999999,-7.84556389999995],[-35.286104,-7.84299559999994],[-35.286086899999901,-7.84289039999993],[-35.286068499999899,-7.84277719999994],[-35.2824064,-7.84006729999993],[-35.2855949,-7.83459279999994],[-35.291440899999898,-7.82864379999995],[-35.2927726,-7.82321349999995],[-35.295434199999903,-7.82052759999993],[-35.2954741,-7.82048739999993],[-35.2954048,-7.82116459999997],[-35.297248,-7.82413719999994],[-35.3015775,-7.82721889999993],[-35.3069542,-7.82684439999997],[-35.3107912,-7.82811179999993],[-35.3128576,-7.82835269999993],[-35.3161517,-7.83033079999996],[-35.3181607,-7.830694],[-35.319208699999898,-7.83017059999997],[-35.3200715,-7.82793329999993],[-35.3192738,-7.82566739999993],[-35.319842299999898,-7.82487439999994],[-35.3223816,-7.82470089999993],[-35.3236975,-7.82350069999995],[-35.326791899999897,-7.82366869999993],[-35.3281565,-7.82417339999995],[-35.3285339,-7.824313],[-35.3289622,-7.82447119999995],[-35.331972999999898,-7.82474139999994],[-35.333380799999901,-7.82397079999993],[-35.3343176999999,-7.82238739999997],[-35.336598,-7.82261569999997],[-35.337484699999898,-7.82160979999998],[-35.338617,-7.82199359999993],[-35.3388656999999,-7.82274349999994],[-35.339202,-7.82375709999997],[-35.3409116999999,-7.82419359999994],[-35.3411927,-7.82493129999995],[-35.342863099999903,-7.82494129999998],[-35.344119,-7.82425709999995],[-35.3446408,-7.824494],[-35.345016299999898,-7.82530959999997],[-35.3451029,-7.82549819999997],[-35.345841,-7.825887],[-35.3481188,-7.82591219999995],[-35.3483543,-7.82866389999998],[-35.3499767,-7.82965839999997],[-35.351570799999898,-7.82966949999997],[-35.3538555,-7.82869909999994],[-35.3568716999999,-7.82893509999997],[-35.356873699999902,-7.82893519999993],[-35.3571102,-7.82895369999994],[-35.359137299999901,-7.82896489999996],[-35.3592585,-7.82863969999994],[-35.358559899999896,-7.827549],[-35.358917399999903,-7.82680029999995],[-35.3632731,-7.82632529999995],[-35.3654630999999,-7.82563539999995],[-35.3697969,-7.82176439999995],[-35.3731404,-7.82051889999997],[-35.3762631,-7.81839109999993],[-35.3771017,-7.81924089999995],[-35.378713699999899,-7.81868479999997],[-35.3819548,-7.82042329999996],[-35.3840316,-7.81960629999998],[-35.384952499999898,-7.81965179999997],[-35.388595,-7.82389479999995],[-35.391363,-7.82573649999995],[-35.3937878999999,-7.82613669999995],[-35.3958129,-7.82743889999995],[-35.400460199999898,-7.82691549999993],[-35.4027546,-7.82493669999997],[-35.403903,-7.82447639999998],[-35.4051355,-7.82467509999998],[-35.405635,-7.82504359999996],[-35.4056408,-7.82458209999993],[-35.405733199999901,-7.81721519999996],[-35.4061528,-7.78378889999993],[-35.4061555,-7.783592],[-35.4060304999999,-7.78169649999995],[-35.4056376,-7.77573779999994],[-35.3998685,-7.77019539999998],[-35.396697399999901,-7.76769509999997],[-35.395316799999897,-7.766608],[-35.3932144,-7.76246869999994],[-35.3930275,-7.76210059999994],[-35.389701,-7.76145719999994],[-35.3884912,-7.76122369999996],[-35.388472,-7.76122919999995],[-35.385325,-7.76214309999995],[-35.383342599999899,-7.76215429999996],[-35.3807937999999,-7.76216939999995],[-35.37853,-7.76218279999995],[-35.3756003,-7.764483],[-35.3717477,-7.76493149999993],[-35.3667838,-7.76857359999997],[-35.364261199999902,-7.76783539999997],[-35.3633004,-7.76755439999994],[-35.3622445,-7.76724559999997],[-35.3583654,-7.76985069999995],[-35.3581832,-7.76997819999997],[-35.3581296999999,-7.77085059999996],[-35.3577663,-7.77675879999993],[-35.3550594,-7.77858169999996],[-35.3518741,-7.77634069999993],[-35.3495965,-7.77409289999997],[-35.347771899999898,-7.77184349999993],[-35.3459621,-7.77230539999994],[-35.3435929,-7.77005819999994],[-35.3313429,-7.77199819999993],[-35.330160299999903,-7.77218549999998],[-35.3169725999999,-7.77427239999997],[-35.304257999999898,-7.76622819999994],[-35.2743302,-7.78825819999997],[-35.274187099999899,-7.78836349999995],[-35.2625272,-7.79917319999993],[-35.252226,-7.80872329999994],[-35.244256,-7.81343469999996],[-35.2259422,-7.82426079999993],[-35.221257,-7.85161529999993],[-35.2204917,-7.85608349999995],[-35.2204444,-7.85635939999997],[-35.219432099999899,-7.86226969999996],[-35.2187248,-7.86639909999997],[-35.2148091,-7.88926059999994],[-35.2149128,-7.889297],[-35.216158499999899,-7.88973419999996],[-35.217096899999902,-7.89030319999995],[-35.2183386,-7.89061469999996],[-35.2197614,-7.89045289999996],[-35.2207878,-7.89025429999998],[-35.221223,-7.89017009999998],[-35.2229153,-7.88968709999995],[-35.2231868,-7.88960959999997],[-35.225903699999897,-7.88857869999993],[-35.2276054,-7.88834249999996],[-35.2289244,-7.88829959999993],[-35.2296696,-7.88860649999998],[-35.2306538,-7.88876869999996],[-35.2316382,-7.88886949999994],[-35.2324297,-7.88895049999996],[-35.233405499999897,-7.88920889999997],[-35.233979,-7.88936079999996],[-35.2350944,-7.88937879999997],[-35.237084099999898,-7.88917679999997],[-35.238964399999901,-7.88868839999998]]]]}},]};
+
+const LOTES = {"type":"FeatureCollection","name":"Lote_Cadastro_IPTU","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"fid":12,"imovel_bairro":null,"imovel_loteamento":null,"propr_nome":null,"propr_nome_logra":null,"propr_num":null,"propr_bairro":null,"propr_nome_munic":"Carpina","info_uso_imovel":null,"med_area_terreno":null,"med_area_construida_unid":null,"ins_cadastral":null},"geometry":{"type":"Polygon","coordinates":[[[-35.234386997042684,-7.857566468893053],[-35.234160298292949,-7.857568044190396],[-35.234167690987029,-7.857346221132876],[-35.23439623468682,-7.857350059276459],[-35.234386997042684,-7.857566468893053]]]}},{"type":"Feature","properties":{"fid":13,"imovel_bairro":null,"imovel_loteamento":null,"propr_nome":null,"propr_nome_logra":null,"propr_num":null,"propr_bairro":null,"propr_nome_munic":"Carpina","info_uso_imovel":null,"med_area_terreno":null,"med_area_construida_unid":null,"ins_cadastral":null},"geometry":{"type":"Polygon","coordinates":[[[-35.234159877035921,-7.858211299813137],[-35.234173990574057,-7.85835166818285],[-35.233947471163198,-7.858371077701523],[-35.233934069224524,-7.858213075784513],[-35.234159877035921,-7.858211299813137]]]}}]};
+
+const QUADRA_VIARIA = {"type":"FeatureCollection","name":"Quadra_viaria_Cadastro","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::31985"}},"features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[253692.947430794505635,9130761.879460690543056],[253743.308625532576116,9130761.856951218098402],[253786.969500410516048,9130761.916976474225521],[253842.410332937230123,9130761.999511206522584],[253862.271191469888436,9130762.119561729952693],[253882.004496320994804,9130762.149574356153607],[253882.552226835861802,9130762.314643826335669],[253883.310045767400879,9130762.817355394363403],[253884.086622593313223,9130763.939077476039529],[253884.401755218306789,9130764.70439956523478],[253884.491793111170409,9130765.972433222457767],[253883.088702614069916,9130775.043750926852226],[253879.359633218206,9130798.836264118552208],[253877.904020616959315,9130808.117670241743326],[253877.101182738959324,9130810.473661771044135],[253875.878168027673382,9130812.199388051405549],[253875.262909093144117,9130812.964710140600801],[253872.963191246439237,9130815.286937458440661],[253870.217035514302552,9130815.827164815738797],[253810.656969389441656,9130814.851754307746887],[253769.100730257079704,9130814.983059570193291],[253729.701648974325508,9130814.91553114913404],[253692.020790813665371,9130814.735455365851521],[253690.09998243273003,9130814.585392212495208],[253687.78900984939537,9130813.65500065498054],[253686.138315147021785,9130811.629148062318563],[253685.147898325609276,9130808.447809182107449],[253685.733144629164599,9130773.873258322477341],[253686.498466718447162,9130767.375523721799254],[253687.113725652976427,9130765.844879543408751],[253688.11164563219063,9130764.175426950678229],[253688.786929828609573,9130763.53390696272254],[253690.430121373210568,9130762.472210142761469],[253691.45055082559702,9130762.082045940682292],[253692.440967647009529,9130761.901970155537128],[253692.947430794505635,9130761.879460690543056]]}}]};
+
+const QUADRA_VIARIA_URL = './Arquivos_base/Quadra_viaria_Cadastro.geojson';
+const LOGRADOUROS_URL = './Arquivos_base/Logradouros_Carpina.geojson';
+const SECTOR_LAYER_DEFS = [
+  {id:'setor01', url:'./Arquivos_base/Setor_01_Carpina.geojson', name:'Setor 01', color:'#2563EB', fillOpacity:0.10},
+  {id:'setor02', url:'./Arquivos_base/Setor_02_Carpina.geojson', name:'Setor 02', color:'#7C3AED', fillOpacity:0.10},
+  {id:'setor03', url:'./Arquivos_base/Setor_03_Carpina.geojson', name:'Setor 03', color:'#059669', fillOpacity:0.10},
+  {id:'setor04', url:'./Arquivos_base/Setor_04_Carpina.geojson', name:'Setor 04', color:'#F59E0B', fillOpacity:0.10},
+  {id:'setor05', url:'./Arquivos_base/Setor_05_Carpina.geojson', name:'Setor 05', color:'#DC2626', fillOpacity:0.10},
+  {id:'setor06', url:'./Arquivos_base/Setor_06_Carpina.geojson', name:'Setor 06', color:'#0F766E', fillOpacity:0.10}
+];
+
+proj4.defs('EPSG:31985', '+proj=utm +zone=25 +south +ellps=GRS80 +units=m +no_defs');
+
+function reprojectCoords(coords){
+  if(!Array.isArray(coords) || coords.length < 2 || typeof coords[0] !== 'number' || typeof coords[1] !== 'number') return coords;
+  const [x, y] = coords;
+  const [lon, lat] = proj4('EPSG:31985', 'EPSG:4326', [x, y]);
+  return [lon, lat];
+}
+
+function reprojectGeoJSON(geojson){
+  const crsName = geojson?.crs?.properties?.name || '';
+  const needsReprojection = /31985|utm/i.test(crsName);
+  if(!geojson || !geojson.features || !needsReprojection) return geojson;
+  const clone = JSON.parse(JSON.stringify(geojson));
+  const visit = value => {
+    if(Array.isArray(value)){
+      if(value.length >= 2 && typeof value[0] === 'number' && typeof value[1] === 'number' && !Array.isArray(value[0])){
+        return reprojectCoords(value);
+      }
+      return value.map(item => visit(item));
+    }
+    if(value && typeof value === 'object'){
+      const out = {};
+      for(const [k,v] of Object.entries(value)) out[k] = visit(v);
+      return out;
+    }
+    return value;
+  };
+  return visit(clone);
+}
+
+// ── MAP INIT ──────────────────────────────────────────────
+const map = L.map('map',{center:[-7.826,-35.310],zoom:12,zoomControl:false,attributionControl:true});
+
+// Base layers
+const baseLayers = {
+  osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',maxZoom:19}),
+  sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+    attribution:'&copy; Esri, DigitalGlobe, Airbus',maxZoom:19}),
+  topo: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{
+    attribution:'&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',maxZoom:17})
+};
+baseLayers.osm.addTo(map);
+
+// ── LAYERS ────────────────────────────────────────────────
+const limitesLayer = L.geoJSON(LIMITES,{
+  style:{color:'#7B2D8B',weight:2.5,opacity:.95,fillColor:'#9B4DAB',fillOpacity:.07,dashArray:null},
+  onEachFeature(f,l){
+    l.on('click',()=>{
+      showInfo(f.properties,'Limite Municipal — Carpina (IBGE)');
+      l.setStyle({fillOpacity:.18});setTimeout(()=>l.setStyle({fillOpacity:.07}),1800);
+    });
+    l.bindTooltip('<strong style="color:#7B2D8B">Carpina — PE</strong><br>Área: 146,49 km²',{sticky:true,className:'',direction:'top'});
+  }
+}).addTo(map);
+
+const lotesLayer = L.geoJSON(LOTES,{
+  style:{color:'#2563EB',weight:2.2,opacity:1,fillColor:'transparent',fillOpacity:0},
+  onEachFeature(f,l){
+    l.on('click',()=>showInfo(f.properties,'Lote — Cadastro IPTU'));
+    l.bindTooltip(`<strong style="color:#2563EB">Lote IPTU #${f.properties.fid}</strong>`,{sticky:true,direction:'top'});
+    l.on('mouseover',()=>l.setStyle({weight:2.8,opacity:1}));
+    l.on('mouseout',()=>l.setStyle({weight:2.2,opacity:1}));
+  }
+}).addTo(map);
+
+let quadraViariaLayer = L.featureGroup();
+let logradourosLayer = L.featureGroup();
+const sectorLayers = {};
+
+function createQuadraViariaLayer(geojson){
+  quadraViariaLayer.clearLayers();
+  const layer = L.geoJSON(geojson,{
+    style:{color:'#a83800',weight:2.2,opacity:1,fillColor:'transparent',fillOpacity:0},
+    onEachFeature(f,l){
+      l.bindTooltip('<strong style="color:#a83800">Quadra viária</strong>',{sticky:true,direction:'top'});
+      l.on('mouseover',()=>l.setStyle({weight:3,opacity:1}));
+      l.on('mouseout',()=>l.setStyle({weight:2.2,opacity:1}));
+    }
+  });
+  quadraViariaLayer.clearLayers();
+  quadraViariaLayer.addLayer(layer);
+  if(document.getElementById('ck-quadra').checked) quadraViariaLayer.addTo(map);
+  return quadraViariaLayer;
+}
+
+function createLogradourosLayer(geojson){
+  logradourosLayer.clearLayers();
+  const layer = L.geoJSON(geojson,{
+    style:{color:'#4B5563',weight:1.7,opacity:0.95,fillColor:'transparent',fillOpacity:0},
+    onEachFeature(f,l){
+      l.on('click',()=>showInfo(f.properties, f.properties.NAME || 'Logradouro'));
+      l.bindTooltip(`<strong style="color:#4B5563">${f.properties.NAME || 'Logradouro'}</strong>`,{sticky:true,direction:'top'});
+      l.on('mouseover',()=>l.setStyle({weight:2.3,opacity:1}));
+      l.on('mouseout',()=>l.setStyle({weight:1.7,opacity:0.95}));
+    }
+  });
+  logradourosLayer.clearLayers();
+  logradourosLayer.addLayer(layer);
+  if(document.getElementById('ck-logradouros').checked) logradourosLayer.addTo(map);
+  return logradourosLayer;
+}
+
+function createSectorLayer(def, geojson){
+  const group = sectorLayers[def.id] || L.featureGroup();
+  group.clearLayers();
+  const layer = L.geoJSON(geojson,{
+    style:{color:def.color,weight:2.4,opacity:0.95,fillColor:def.color,fillOpacity:def.fillOpacity},
+    onEachFeature(f,l){
+      l.on('click',()=>showInfo(f.properties, `${def.name} — Carpina`));
+      l.bindTooltip(`<strong style="color:${def.color}">${def.name}</strong>`,{sticky:true,direction:'top'});
+      l.on('mouseover',()=>l.setStyle({weight:3.2,opacity:1}));
+      l.on('mouseout',()=>l.setStyle({weight:2.4,opacity:0.95}));
+    }
+  });
+  group.clearLayers();
+  group.addLayer(layer);
+  sectorLayers[def.id] = group;
+  if(document.getElementById(`ck-${def.id}`).checked) group.addTo(map);
+  return group;
+}
+
+function loadQuadraViariaLayer(){
+  fetch(QUADRA_VIARIA_URL)
+    .then(r=>{ if(!r.ok) throw new Error('Falha ao carregar o arquivo GeoJSON'); return r.json(); })
+    .then(data=>{ createQuadraViariaLayer(reprojectGeoJSON(data)); updateLayerStatus(); })
+    .catch(err=>{ console.error('Erro ao carregar Quadra Viária:', err); });
+}
+
+function loadLogradourosLayer(){
+  fetch(LOGRADOUROS_URL)
+    .then(r=>{ if(!r.ok) throw new Error('Falha ao carregar o arquivo GeoJSON'); return r.json(); })
+    .then(data=>{ createLogradourosLayer(data); updateLayerStatus(); })
+    .catch(err=>{ console.error('Erro ao carregar Logradouros:', err); });
+}
+
+function loadSectorLayers(){
+  SECTOR_LAYER_DEFS.forEach(def=>{
+    fetch(def.url)
+      .then(r=>{ if(!r.ok) throw new Error(`Falha ao carregar ${def.name}`); return r.json(); })
+      .then(data=>{ createSectorLayer(def, reprojectGeoJSON(data)); updateLayerStatus(); })
+      .catch(err=>{ console.error(`Erro ao carregar ${def.name}:`, err); });
+  });
+}
+
+loadQuadraViariaLayer();
+loadLogradourosLayer();
+loadSectorLayers();
+
+// Fit to municipality
+map.fitBounds(limitesLayer.getBounds(),{padding:[30,30]});
+updateLayerStatus();
+
+// Scale
+L.control.scale({imperial:false,metric:true,position:'bottomright'}).addTo(map);
+
+// ── FUNCTIONS ─────────────────────────────────────────────
+function fitMuni(){map.fitBounds(limitesLayer.getBounds(),{padding:[30,30]});}
+
+function updateLayerStatus(){
+  const overlayLayers=[limitesLayer,lotesLayer,quadraViariaLayer,logradourosLayer,...Object.values(sectorLayers)].filter(Boolean);
+  const activeCount=overlayLayers.filter(layer=>map.hasLayer(layer)).length;
+  const status=document.querySelector('#stb span:nth-of-type(2)');
+  if(status){
+    status.innerHTML=`<i class="fa-solid fa-layer-group"></i> ${activeCount} camada${activeCount!==1?'s':''} ativa${activeCount!==1?'s':''}`;
+  }
+}
+
+function setBase(key,card){
+  Object.values(baseLayers).forEach(l=>map.hasLayer(l)&&map.removeLayer(l));
+  document.querySelectorAll('.bm-card').forEach(c=>c.classList.remove('on'));
+  baseLayers[key].addTo(map);
+  card.classList.add('on');
+  // bring overlays back on top
+  [limitesLayer,lotesLayer,quadraViariaLayer,logradourosLayer,...Object.values(sectorLayers)].filter(Boolean).forEach(l=>{if(map.hasLayer(l)){map.removeLayer(l);l.addTo(map);}});
+}
+
+function getLayerByName(name){
+  if(name==='limites') return limitesLayer;
+  if(name==='lotes') return lotesLayer;
+  if(name==='quadra') return quadraViariaLayer;
+  if(name==='logradouros') return logradourosLayer;
+  return sectorLayers[name];
+}
+
+function toggleSectorGroup(sourceEl){
+  const master=document.getElementById('ck-setores-group');
+  if(!master) return;
+  const nextState=sourceEl&&sourceEl.type==='checkbox'?sourceEl.checked:!master.checked;
+  master.checked=nextState;
+
+  SECTOR_LAYER_DEFS.forEach(def=>{
+    const ck=document.getElementById(`ck-${def.id}`);
+    if(!ck) return;
+    ck.checked=nextState;
+    toggleLayer(def.id, ck);
+  });
+  updateLayerStatus();
+}
+
+function syncSectorMasterCheckbox(){
+  const master=document.getElementById('ck-setores-group');
+  if(!master) return;
+  const allOn=SECTOR_LAYER_DEFS.every(def=>document.getElementById(`ck-${def.id}`)?.checked);
+  master.checked=allOn;
+}
+
+function toggleLayer(name, sourceEl){
+  const layer=getLayerByName(name);
+  const ck=document.getElementById(`ck-${name}`);
+  if(!layer||!ck) return;
+  const nextState=sourceEl&&sourceEl.type==='checkbox'?sourceEl.checked:!ck.checked;
+
+  ck.checked=nextState;
+  if(nextState){
+    if(!map.hasLayer(layer)) layer.addTo(map);
+  } else {
+    if(map.hasLayer(layer)) map.removeLayer(layer);
+  }
+  if(SECTOR_LAYER_DEFS.some(def=>def.id===name)) syncSectorMasterCheckbox();
+  updateLayerStatus();
+}
+
+function zoomToLayer(name){
+  const layer=getLayerByName(name);
+  const ck=document.getElementById(`ck-${name}`);
+  if(!layer||!ck) return;
+
+  if(!map.hasLayer(layer)){
+    ck.checked=true;
+    layer.addTo(map);
+  }
+
+  const bounds=layer.getBounds();
+  if(bounds&&bounds.isValid&&bounds.isValid()){
+    map.fitBounds(bounds,{padding:[30,30]});
+  } else {
+    map.setView(map.getCenter(),Math.max(map.getZoom(),13));
+  }
+  updateLayerStatus();
+}
+
+function showInfo(props,title){
+  const LABELS={
+    CD_MUN:'Código IBGE',NM_MUN:'Município',NM_UF:'Estado',SIGLA_UF:'UF',
+    NM_REGIAO:'Região',AREA_KM2:'Área (km²)',NM_RGI:'RGI',NM_RGINT:'RGINT',
+    fid:'ID',propr_nome_munic:'Município',info_uso_imovel:'Uso do Imóvel',
+    med_area_terreno:'Área Terreno',med_area_construida_unid:'Área Construída',
+    ins_cadastral:'Inscrição Cadastral'
+  };
+  let html=`<div class="fi-title">${title}</div><table class="fi-tbl">`;
+  for(const[k,v] of Object.entries(props)){
+    if(v===null||v===undefined||v==='')continue;
+    const lbl=LABELS[k]||k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+    html+=`<tr><td>${lbl}</td><td>${v}</td></tr>`;
+  }
+  html+='</table>';
+  document.getElementById('fi-body').innerHTML=html;
+}
+
+let showCoords=true;
+function toggleCoords(btn){
+  showCoords=!showCoords;
+  btn.classList.toggle('on',showCoords);
+  if(!showCoords)document.getElementById('coords-txt').textContent='Coordenadas desativadas';
+}
+
+map.on('mousemove',e=>{
+  if(!showCoords)return;
+  const lat=e.latlng.lat.toFixed(6),lng=e.latlng.lng.toFixed(6);
+  document.getElementById('coords-txt').textContent=`Lat: ${lat}  |  Lon: ${lng}`;
+});
+
+function toggleFullscreen(btn){
+  const mc=document.getElementById('mc');
+  if(!document.fullscreenElement){
+    mc.requestFullscreen();
+    btn.querySelector('i').className='fa-solid fa-compress';
+  } else {
+    document.exitFullscreen();
+    btn.querySelector('i').className='fa-solid fa-expand';
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement)
+    document.querySelector('#btn-fs i').className='fa-solid fa-expand';
+  setTimeout(()=>map.invalidateSize(),200);
+});
+
+function toggleSidebar(){
+  const sb=document.getElementById('sb');
+  const tog=document.getElementById('tog');
+  const icon=document.getElementById('tog-icon');
+  sb.classList.toggle('closed');
+  const closed=sb.classList.contains('closed');
+  tog.style.left=closed?'0':'290px';
+  icon.className=closed?'fa-solid fa-chevron-right':'fa-solid fa-chevron-left';
+  setTimeout(()=>map.invalidateSize(),300);
+}
+
+function toggleSec(id,hdr){
+  const el=document.getElementById(id);
+  el.classList.toggle('hidden');
+  hdr.classList.toggle('closed');
+}
+
+// ── BASEMAP THUMBNAILS (canvas) ────────────────────────────
+function drawThumb(){
+  // OSM
+  const c1=document.getElementById('cv-osm'),x1=c1.getContext('2d');
+  x1.fillStyle='#e8f5e9';x1.fillRect(0,0,60,44);
+  x1.fillStyle='#cfd8dc';x1.fillRect(0,28,60,16);
+  x1.fillStyle='#b0bec5';x1.fillRect(0,36,60,2);
+  x1.fillStyle='#a5d6a7';x1.fillRect(5,5,50,20);
+  x1.strokeStyle='#f8f9fa';x1.lineWidth=2;
+  [[10,15,50,15],[10,22,50,22]].forEach(([x,y,ex,ey])=>{x1.beginPath();x1.moveTo(x,y);x1.lineTo(ex,ey);x1.stroke();});
+  x1.fillStyle='#e53935';x1.beginPath();x1.arc(30,16,4,0,Math.PI*2);x1.fill();
+  // SAT
+  const c2=document.getElementById('cv-sat'),x2=c2.getContext('2d');
+  x2.fillStyle='#1b2a1b';x2.fillRect(0,0,60,44);
+  x2.fillStyle='#2d4a2d';x2.fillRect(3,3,25,18);
+  x2.fillStyle='#1a3a1a';x2.fillRect(30,6,27,14);
+  x2.fillStyle='#3a5a3a';x2.fillRect(5,24,18,17);
+  x2.fillStyle='#4a6a4a';x2.fillRect(25,22,15,20);
+  x2.fillStyle='#2a4a2a';x2.fillRect(42,20,16,24);
+  x2.fillStyle='rgba(255,255,255,.12)';x2.fillRect(0,0,60,44);
+  // TOPO
+  const c3=document.getElementById('cv-topo'),x3=c3.getContext('2d');
+  x3.fillStyle='#faf8f0';x3.fillRect(0,0,60,44);
+  x3.strokeStyle='#a89880';x3.lineWidth=1.5;
+  [[0,35,15,22,30,28,45,18,60,25],[0,42,20,32,40,38,60,30]].forEach(pts=>{
+    x3.beginPath();x3.moveTo(pts[0],pts[1]);
+    for(let i=2;i<pts.length;i+=2)x3.lineTo(pts[i],pts[i+1]);x3.stroke();});
+  x3.strokeStyle='#c8b898';x3.lineWidth=1;
+  [[0,38,18,28,35,34,60,26]].forEach(pts=>{
+    x3.beginPath();x3.moveTo(pts[0],pts[1]);
+    for(let i=2;i<pts.length;i+=2)x3.lineTo(pts[i],pts[i+1]);x3.stroke();});
+  x3.fillStyle='#4caf50';x3.fillRect(8,8,6,10);x3.fillRect(18,5,6,12);x3.fillRect(28,9,6,9);
+}
+drawThumb();
+</script>
+</body>
+</html>
