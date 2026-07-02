@@ -1,0 +1,6 @@
+# Configurações locais do Claude Code (específicas da máquina)
+.claude/settings.local.json
+
+# Backups locais
+index_backup.html
+*_backup.html
