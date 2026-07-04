@@ -91,6 +91,9 @@ button{font-family:inherit}
 .opa-row{display:flex;align-items:center;gap:7px;padding:2px 4px 4px 25px}
 .opa-row i{font-size:9px;color:#bbb}
 .opa-row input[type=range]{flex:1;accent-color:var(--pu-l);height:3px;cursor:pointer}
+#setores-children.collapsed{display:none}
+#setores-arrow{transition:transform .2s}
+.lyr-group .lyr-name{cursor:pointer}
 
 /* legend */
 .leg-row{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:12px}
@@ -467,6 +470,13 @@ const LAYER_DEFS=[
    searchFields:[{k:'ins_cadastral',ic:'fa-barcode'},{k:'propr_nome',ic:'fa-user'},{k:'imovel_bairro',ic:'fa-location-dot'}],
    tableFields:['ins_cadastral','propr_nome','imovel_bairro','imovel_numero','info_uso_imovel','med_area_terreno','med_area_construida_unid']},
 
+  {id:'imoveis_incra',name:'Imóveis INCRA',color:'#16A34A',kind:'poly',
+   url:'./Arquivos_base/Imoveis_INCRA_Carpina.geojson',fillOpacity:0.08,weight:1.7,
+   title:'Imóveis INCRA — Carpina',
+   labelFn:f=>f.properties.nome_area||f.properties.codigo_imo||'Imóvel INCRA',
+   searchFields:[{k:'nome_area',ic:'fa-building'},{k:'codigo_imo',ic:'fa-hashtag'},{k:'registro_m',ic:'fa-file'}],
+   tableFields:['nome_area','codigo_imo','parcela_co','situacao_i','status','registro_m','data_aprov']},
+
   {id:'quadra',name:'Quadra Viária',color:'#a83800',kind:'line',
    url:'./Arquivos_base/Quadra_viaria_Cadastro.geojson',weight:2.2,
    title:'Quadra Viária',labelFn:()=>'Quadra viária'},
@@ -508,13 +518,13 @@ LAYER_DEFS.forEach(d=>{layerFeatures[d.id]=[];d._opacity=1;});
 /* ══════════════════════════════════════════════════════════
    MAPA
    ══════════════════════════════════════════════════════════ */
-const map=L.map('map',{center:[-7.826,-35.310],zoom:12,zoomControl:false,
+const map=L.map('map',{center:[-7.826,-35.310],zoom:12,zoomControl:false,maxZoom:22,
   attributionControl:true,preferCanvas:true /* melhor desempenho c/ muitas feições */});
 
 const baseLayers={
-  osm:L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',maxZoom:19}),
-  sat:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri, DigitalGlobe, Airbus',maxZoom:19}),
-  topo:L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',maxZoom:17})
+  osm:L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',maxNativeZoom:19,maxZoom:22}),
+  sat:L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{subdomains:['mt0','mt1','mt2','mt3'],attribution:'&copy; Google',maxNativeZoom:21,maxZoom:22}),
+  topo:L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://opentopomap.org">OpenTopoMap</a>',maxNativeZoom:17,maxZoom:22})
 };
 baseLayers.osm.addTo(map);
 L.control.scale({imperial:false,metric:true,position:'bottomright'}).addTo(map);
@@ -599,10 +609,14 @@ function renderLayerControls(){
       html+='<div class="lyr-block"><div class="lyr lyr-group" >'+
         '<input type="checkbox" id="ck-setores-group" checked aria-label="Todos os setores" onchange="toggleSectorGroup(this)">'+
         '<span class="lyr-dot" style="background:linear-gradient(135deg,#2563EB,#DC2626);border-color:#7B2D8B"></span>'+
-        '<span class="lyr-name" onclick="document.getElementById(\'ck-setores-group\').click()"><strong>Setores (todos)</strong></span></div>';
+        '<span class="lyr-name" onclick="toggleSectorList()"><strong>Setores (todos)</strong></span>'+
+        '<button class="lyr-action" type="button" id="setores-toggle" title="Expandir/recolher setores" aria-label="Expandir ou recolher lista de setores" aria-expanded="false" onclick="toggleSectorList()"><i class="fa-solid fa-chevron-down" id="setores-arrow" style="transform:rotate(-90deg)"></i></button>'+
+        '</div>';
+      html+='<div id="setores-children" class="collapsed">';
       LAYER_DEFS.filter(s=>s.group==='setores').forEach(s=>{
         html+='<div class="lyr-block child"><div class="lyr">'+rowInner(s)+'</div>'+opacityRow(s)+'</div>';
       });
+      html+='</div>';
       html+='</div>';
     }
   });
@@ -648,6 +662,15 @@ function toggleSectorGroup(src){
     const ck=document.getElementById('ck-'+d.id);if(ck){ck.checked=on;toggleLayer(d.id,ck);}
   });
   updateLayerStatus();
+}
+function toggleSectorList(){
+  const c=document.getElementById('setores-children');if(!c)return;
+  const willOpen=c.classList.contains('collapsed');
+  c.classList.toggle('collapsed',!willOpen);
+  const btn=document.getElementById('setores-toggle');
+  const arrow=document.getElementById('setores-arrow');
+  if(btn)btn.setAttribute('aria-expanded',String(willOpen));
+  if(arrow)arrow.style.transform=willOpen?'rotate(0deg)':'rotate(-90deg)';
 }
 function syncSectorMaster(){
   const master=document.getElementById('ck-setores-group');if(!master)return;
@@ -914,7 +937,8 @@ function exportTable(fmt){
 function setBase(key,card){
   Object.values(baseLayers).forEach(l=>map.hasLayer(l)&&map.removeLayer(l));
   document.querySelectorAll('.bm-card').forEach(c=>c.classList.remove('on'));
-  baseLayers[key].addTo(map);card.classList.add('on');
+  baseLayers[key].addTo(map);
+  card.classList.add('on');
   LAYER_DEFS.forEach(d=>{const l=layers[d.id];if(l&&map.hasLayer(l)){map.removeLayer(l);l.addTo(map);}});
 }
 function printMap(){setTimeout(()=>window.print(),120);}

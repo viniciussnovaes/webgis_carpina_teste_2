@@ -4,3 +4,9 @@
 # Backups locais
 index_backup.html
 *_backup.html
+
+# Ortofoto local e derivados — pesados demais para o git/Vercel (uso local apenas)
+tiles/
+*.ecw
+*.vrt
+_orto_check.html
