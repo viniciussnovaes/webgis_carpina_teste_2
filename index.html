@@ -68,14 +68,16 @@ button{font-family:inherit}
 #search-input-wrap i{color:var(--pu);font-size:13px}
 #search-input{border:none;background:transparent;outline:none;flex:1;font-size:12.5px;color:var(--dg)}
 #search-clear{border:none;background:transparent;color:#999;cursor:pointer;display:none;font-size:13px}
-#search-hint{font-size:10.5px;color:#999;margin-top:5px;line-height:1.4}
+#search-hint{font-size:10.5px;color:#5f5f5f;margin-top:5px;line-height:1.5}
+#search-hint code{background:var(--lg);border:1px solid var(--bd);border-radius:3px;padding:0 3px;font-size:9.5px;color:var(--pu-d)}
+#search-hint kbd{background:#fff;border:1px solid #bbb;border-bottom-width:2px;border-radius:3px;padding:0 4px;font-size:9.5px;font-family:inherit;color:#333}
 #search-results{list-style:none;margin-top:7px;max-height:230px;overflow-y:auto;border-radius:7px}
 #search-results li{padding:7px 9px;border-radius:6px;cursor:pointer;font-size:12px;display:flex;gap:8px;align-items:flex-start;border-bottom:1px solid #f2f2f2}
 #search-results li:hover,#search-results li.active{background:var(--acc)}
 #search-results .r-ic{color:var(--pu);font-size:12px;margin-top:1px;flex-shrink:0;width:15px;text-align:center}
 #search-results .r-main{font-weight:600;color:var(--dg)}
-#search-results .r-sub{font-size:10.5px;color:#888;display:block;font-weight:400}
-#search-empty{font-size:11.5px;color:#aaa;font-style:italic;padding:8px 4px;text-align:center}
+#search-results .r-sub{font-size:10.5px;color:#5f5f5f;display:block;font-weight:400}
+#search-empty{font-size:11.5px;color:#666;font-style:italic;padding:8px 4px;text-align:center}
 
 /* layer items */
 .lyr{display:flex;align-items:center;gap:9px;padding:6px 4px 2px;border-radius:5px}
@@ -91,21 +93,47 @@ button{font-family:inherit}
 .opa-row{display:flex;align-items:center;gap:7px;padding:2px 4px 4px 25px}
 .opa-row i{font-size:9px;color:#bbb}
 .opa-row input[type=range]{flex:1;accent-color:var(--pu-l);height:3px;cursor:pointer}
+.opa-val{font-size:9.5px;color:#888;min-width:30px;text-align:right}
 #setores-children.collapsed{display:none}
 #setores-arrow{transition:transform .2s}
 .lyr-group .lyr-name{cursor:pointer}
+.zoom-note{font-size:10px;color:#9B4DAB;padding:0 4px 5px 27px;display:none;align-items:center;gap:5px;font-style:italic}
+.zoom-note.show{display:flex}
+.zoom-note i{font-size:9px}
+.lyr-meta{font-size:9.5px;color:#8a8a8a;padding:0 4px 3px 27px}
+.lyr-block.dim .lyr-name{opacity:.5}
+.lyr-swatch-multi{display:flex;gap:2px;padding:2px 4px 4px 27px;flex-wrap:wrap}
+.lyr-swatch-multi .sw{display:flex;align-items:center;gap:3px;font-size:9.5px;color:#666}
+.lyr-swatch-multi .sw i{width:11px;height:11px;border-radius:2px;display:inline-block;border:1px solid rgba(0,0,0,.15)}
 
 /* legend */
 .leg-row{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:12px}
 .leg-clr{width:22px;height:13px;border-radius:2px;flex-shrink:0;border:1px solid rgba(0,0,0,.15)}
 .leg-clr.line{height:0;border:none;border-top:3px solid}
 
-/* feature info */
+/* feature info — painel slide-in pela direita */
+#fi-panel{
+  position:absolute;top:12px;right:56px;z-index:960;width:320px;max-width:calc(100% - 70px);
+  max-height:calc(100% - 24px);background:var(--wh);border-radius:10px;box-shadow:var(--sh2);
+  border:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;
+  transform:translateX(calc(100% + 60px));opacity:0;pointer-events:none;
+  transition:transform .28s ease,opacity .2s ease;
+}
+#fi-panel.open{transform:translateX(0);opacity:1;pointer-events:auto}
+#fi-head{display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--lg);border-bottom:1px solid var(--bd)}
+#fi-head-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--pu);display:flex;align-items:center;gap:7px;flex:1}
+#fi-close{background:transparent;border:none;color:#666;font-size:16px;cursor:pointer;width:26px;height:26px;border-radius:5px}
+#fi-close:hover{background:var(--acc);color:var(--pu)}
 #fi-wrap{flex:1;overflow-y:auto}
 #fi-body{padding:10px 14px;font-size:12px}
+#fi-actions{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--bd);background:var(--lg);flex-wrap:wrap}
+.fi-abtn{flex:1;min-width:88px;background:#fff;color:var(--pu);border:1.5px solid var(--pu);border-radius:6px;padding:6px 8px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.fi-abtn:hover{background:var(--pu);color:#fff}
 .fi-ph{color:#aaa;font-style:italic;text-align:center;padding:22px 10px}
 .fi-ph i{display:block;font-size:28px;margin-bottom:8px;color:#ddd}
 .fi-title{font-weight:700;font-size:13px;color:var(--pu);padding-bottom:6px;margin-bottom:8px;border-bottom:2px solid var(--pu)}
+.fi-src{font-size:10.5px;color:#777;margin:-4px 0 8px;display:flex;align-items:center;gap:5px}
+.fi-src i{font-size:9px;color:var(--pu-l)}
 .fi-tbl{width:100%;border-collapse:collapse}
 .fi-tbl tr:nth-child(even){background:var(--lg)}
 .fi-tbl td{padding:4px 6px;border-bottom:1px solid var(--bd);vertical-align:top;font-size:11.5px}
@@ -138,6 +166,7 @@ button{font-family:inherit}
 .tbtn:hover{background:var(--pu);color:var(--wh);border-color:var(--pu);transform:translateY(-1px);box-shadow:var(--sh2)}
 .tbtn.on{background:var(--pu);color:var(--wh);border-color:var(--pu)}
 .tb-div{height:1px;background:var(--bd);margin:2px 5px}
+.tb-grp{display:flex;flex-direction:column;gap:5px}
 
 /* measure readout */
 #measure-box{
@@ -154,7 +183,13 @@ button{font-family:inherit}
   position:absolute;bottom:34px;left:12px;z-index:900;background:var(--wh);
   border-radius:9px;box-shadow:var(--sh2);padding:10px 12px;border:1px solid var(--bd);
 }
-#bmp h4{font-size:10px;text-transform:uppercase;letter-spacing:.9px;color:var(--pu);margin-bottom:8px;font-weight:700}
+#bmp h4{font-size:10px;text-transform:uppercase;letter-spacing:.9px;color:var(--pu);margin-bottom:8px;font-weight:700;display:flex;align-items:center;cursor:pointer}
+#bmp h4 .bmp-chev{margin-left:auto;font-size:10px;color:#aaa}
+#bmp.collapsed{padding:0;border:none;box-shadow:none;background:transparent}
+#bmp.collapsed #bmp-body{display:none}
+#bmp:not(.collapsed) #bmp-toggle{display:none}
+#bmp-toggle{width:40px;height:40px;border-radius:9px;background:var(--wh);border:1px solid var(--bd);box-shadow:var(--sh2);color:var(--pu);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#bmp-toggle:hover{background:var(--pu);color:#fff}
 .bm-opts{display:flex;gap:7px}
 .bm-card{
   cursor:pointer;border-radius:6px;overflow:hidden;border:2.5px solid transparent;
@@ -182,7 +217,7 @@ button{font-family:inherit}
 .at-btn{background:var(--pu);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11.5px;cursor:pointer;display:flex;align-items:center;gap:5px}
 .at-btn.sec{background:#fff;color:var(--pu);border:1.5px solid var(--pu)}
 .at-btn:hover{background:var(--pu-d);color:#fff}
-#at-count{font-size:11px;color:#888;margin-left:auto}
+#at-count{font-size:11px;color:#5f5f5f;margin-left:auto}
 #at-close{margin-left:6px;background:transparent;border:none;color:#666;font-size:16px;cursor:pointer}
 #at-body{overflow:auto;flex:1}
 #at-table{border-collapse:collapse;width:100%;font-size:11.5px}
@@ -193,13 +228,20 @@ button{font-family:inherit}
 #at-table tbody tr{cursor:pointer}
 #at-table tbody tr:hover td{background:var(--acc)}
 
+/* ── SWIPE / CORTINA ── */
+#swipe-divider{position:absolute;top:0;bottom:0;width:4px;background:var(--wh);box-shadow:0 0 0 1px rgba(0,0,0,.25),0 0 10px rgba(0,0,0,.3);z-index:800;cursor:ew-resize;margin-left:-2px}
+#swipe-divider .sd-handle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:var(--pu);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh2);cursor:ew-resize}
+#swipe-divider .sd-tag{position:absolute;top:12px;background:rgba(45,45,45,.82);color:#fff;font-size:10px;padding:3px 7px;border-radius:4px;white-space:nowrap}
+#swipe-divider .sd-l{right:10px}
+#swipe-divider .sd-r{left:10px}
+
 /* error banner */
 #err{position:absolute;top:0;left:0;right:0;z-index:2000;background:#b3261e;color:#fff;padding:10px 16px;font-size:12.5px;display:none;text-align:center}
 #err b{font-weight:700}
 
 /* ── STATUS BAR ── */
 #stb{
-  height:26px;background:var(--pu-d);color:rgba(255,255,255,.82);
+  height:26px;background:var(--pu-d);color:rgba(255,255,255,.92);
   padding:0 16px;font-size:10.5px;display:flex;align-items:center;gap:20px;
   flex-shrink:0;overflow:hidden;white-space:nowrap;
 }
@@ -213,25 +255,46 @@ button{font-family:inherit}
 
 /* ── RESPONSIVE (mobile) ── */
 #sb-backdrop{display:none;position:absolute;inset:0;background:rgba(0,0,0,.4);z-index:590}
+#sheet-handle{display:none}
 @media (max-width:760px){
   #hdr-title p{display:none}
   #hdr-r{display:none}
-  #sb{position:absolute;top:0;bottom:0;left:0;width:82%;max-width:320px;z-index:700}
-  #sb.closed{width:82%;max-width:320px;transform:translateX(-105%)}
-  #sb:not(.closed) ~ #sb-backdrop{display:block}
-  #tog{left:0}
-  #sb:not(.closed) ~ #tog{left:82%}
+  #tog{display:none}
+  /* Bottom sheet arrastável (padrão Google Maps) */
+  #sb{
+    position:fixed;left:0;right:0;bottom:0;top:auto;width:100%;max-width:none;height:86vh;
+    border-right:none;border-top-left-radius:16px;border-top-right-radius:16px;
+    box-shadow:0 -6px 24px rgba(0,0,0,.28);z-index:1200;overflow-y:auto;overscroll-behavior:contain;
+    transform:translateY(calc(100% - 104px));transition:transform .32s cubic-bezier(.32,.72,0,1);
+  }
+  #sb.sheet-half{transform:translateY(45%)}
+  #sb.sheet-full{transform:translateY(0)}
+  #sb.closed{transform:translateY(100%)}
+  #sheet-handle{display:flex;justify-content:center;align-items:center;padding:9px 0 7px;cursor:grab;position:sticky;top:0;background:var(--wh);z-index:6;flex-shrink:0;touch-action:none}
+  #sheet-handle .grip{width:42px;height:5px;border-radius:3px;background:#ccc}
+  #sb-backdrop{display:none}
+  #sb.sheet-full ~ #sb-backdrop{display:block}
   #at-panel{height:55%}
-  #bmp{bottom:40px}
+  #bmp{bottom:116px}
+  #fi-panel{right:8px;left:8px;top:8px;width:auto;max-width:none;max-height:60%}
 }
+
+/* print overlay (norte + escala) */
+#print-info{display:none}
 
 /* ── PRINT ── */
 @media print{
-  #hdr-r,#sb,#tog,#tb,#bmp,#stb,#at-panel,#measure-box,#sb-backdrop,#err{display:none!important}
+  #hdr-r,#sb,#tog,#tb,#bmp,#stb,#at-panel,#measure-box,#sb-backdrop,#err,#fi-panel,#swipe-divider{display:none!important}
   #wrap{height:100vh}
   #hdr{box-shadow:none}
   #mc{width:100%}
-  .leaflet-control-zoom,.leaflet-control-attribution{display:none!important}
+  .leaflet-control-zoom{display:none!important}
+  .leaflet-control-attribution{display:block!important;font-size:9px!important} /* atribuição obrigatória p/ licença dos dados */
+  #print-info{display:flex;position:absolute;top:10px;left:10px;z-index:1500;background:#fff;border:1px solid #999;border-radius:6px;padding:8px 12px;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+  #print-info .pi-north{display:flex;flex-direction:column;align-items:center;color:#111;font-weight:700;font-size:11px}
+  #print-info .pi-north i{font-size:18px;transform:rotate(-45deg)}
+  #print-info .pi-title{font-weight:700;font-size:13px;color:#111}
+  #print-info .pi-meta{font-size:10px;color:#333;margin-top:2px}
 }
 </style>
 </head>
@@ -261,6 +324,9 @@ button{font-family:inherit}
   <!-- SIDEBAR -->
   <aside id="sb" aria-label="Painel lateral">
 
+    <!-- ALÇA DO BOTTOM SHEET (só mobile) -->
+    <div id="sheet-handle" role="button" tabindex="0" aria-label="Arrastar painel" title="Arraste ou toque para expandir"><span class="grip"></span></div>
+
     <!-- BUSCA -->
     <div class="sec">
       <button class="sec-h" type="button" aria-expanded="true" onclick="toggleSec('s-search',this)">
@@ -273,46 +339,22 @@ button{font-family:inherit}
             <i class="fa-solid fa-search"></i>
             <input id="search-input" type="text" autocomplete="off" role="combobox"
                    aria-expanded="false" aria-controls="search-results" aria-autocomplete="list"
-                   placeholder="Logradouro, inscrição, proprietário…">
+                   placeholder="Endereço, inscrição, coordenada…  ( / )">
             <button id="search-clear" type="button" title="Limpar" aria-label="Limpar busca" onclick="clearSearch()"><i class="fa-solid fa-xmark"></i></button>
           </div>
-          <div id="search-hint">Digite ao menos 2 caracteres. Busca em logradouros, lotes (inscrição/proprietário) e setores.</div>
+          <div id="search-hint">Busca logradouros, lotes (inscrição/proprietário), imóveis INCRA e setores. Aceita coordenadas coladas — ex.: <code>-7.826, -35.310</code> ou UTM <code>290000 9134500</code>. Atalho: <kbd>/</kbd> ou <kbd>Ctrl</kbd>+<kbd>K</kbd>.</div>
           <ul id="search-results" role="listbox" aria-label="Resultados da busca"></ul>
         </div>
       </div>
     </div>
 
     <!-- CAMADAS -->
-    <div class="sec">
+    <div class="sec grow">
       <button class="sec-h" type="button" aria-expanded="true" onclick="toggleSec('s-layers',this)">
         <i class="fa-solid fa-layer-group"></i> Camadas
         <i class="fa-solid fa-chevron-down arr"></i>
       </button>
-      <div class="sec-b" id="s-layers"><!-- gerado via JS --></div>
-    </div>
-
-    <!-- LEGENDA -->
-    <div class="sec">
-      <button class="sec-h closed" type="button" aria-expanded="false" onclick="toggleSec('s-legend',this)">
-        <i class="fa-solid fa-list"></i> Legenda
-        <i class="fa-solid fa-chevron-down arr"></i>
-      </button>
-      <div class="sec-b hidden" id="s-legend"><!-- gerado via JS --></div>
-    </div>
-
-    <!-- INFORMAÇÕES DA FEIÇÃO -->
-    <div class="sec grow">
-      <div class="sec-h" style="cursor:default">
-        <i class="fa-solid fa-circle-info"></i> Informações da Feição
-      </div>
-      <div id="fi-wrap">
-        <div id="fi-body">
-          <div class="fi-ph">
-            <i class="fa-regular fa-hand-pointer"></i>
-            Clique em uma feição para ver detalhes
-          </div>
-        </div>
-      </div>
+      <div class="sec-b" id="s-layers" style="overflow-y:auto"><!-- gerado via JS --></div>
     </div>
 
     <!-- SOBRE O MUNICÍPIO -->
@@ -338,11 +380,27 @@ button{font-family:inherit}
   <button id="tog" title="Mostrar/ocultar painel" aria-label="Mostrar ou ocultar painel lateral" onclick="toggleSidebar()">
     <i class="fa-solid fa-chevron-left" id="tog-icon"></i>
   </button>
-  <div id="sb-backdrop" onclick="toggleSidebar()"></div>
+  <div id="sb-backdrop" onclick="onBackdrop()"></div>
 
   <!-- MAP CONTAINER -->
   <div id="mc">
     <div id="map"></div>
+
+    <!-- FEATURE INFO (slide-in pela direita, sob demanda) -->
+    <aside id="fi-panel" aria-label="Informações da feição" aria-hidden="true">
+      <div id="fi-head">
+        <span id="fi-head-title"><i class="fa-solid fa-circle-info"></i> Informações da Feição</span>
+        <button id="fi-close" type="button" title="Fechar" aria-label="Fechar painel de informações" onclick="closeInfo()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="fi-wrap">
+        <div id="fi-body"></div>
+      </div>
+      <div id="fi-actions">
+        <button class="fi-abtn" type="button" onclick="exportSelected('geojson')" title="Exportar feição em GeoJSON"><i class="fa-solid fa-map"></i> GeoJSON</button>
+        <button class="fi-abtn" type="button" onclick="exportSelected('kml')" title="Exportar feição em KML (Google Earth)"><i class="fa-solid fa-earth-americas"></i> KML</button>
+        <button class="fi-abtn" type="button" onclick="openStreetView()" title="Abrir no Google Street View"><i class="fa-solid fa-street-view"></i> Street View</button>
+      </div>
+    </aside>
 
     <!-- MEASURE READOUT -->
     <div id="measure-box" role="status" aria-live="polite">
@@ -353,34 +411,56 @@ button{font-family:inherit}
 
     <!-- TOOLBAR -->
     <div id="tb" role="toolbar" aria-label="Ferramentas do mapa">
-      <button class="tbtn" onclick="map.zoomIn()" title="Aproximar" aria-label="Aproximar"><i class="fa-solid fa-plus"></i></button>
-      <button class="tbtn" onclick="map.zoomOut()" title="Afastar" aria-label="Afastar"><i class="fa-solid fa-minus"></i></button>
+      <!-- Navegação -->
+      <div class="tb-grp" role="group" aria-label="Navegação">
+        <button class="tbtn" onclick="map.zoomIn()" title="Aproximar (+)" aria-label="Aproximar"><i class="fa-solid fa-plus"></i></button>
+        <button class="tbtn" onclick="map.zoomOut()" title="Afastar (−)" aria-label="Afastar"><i class="fa-solid fa-minus"></i></button>
+        <button class="tbtn" onclick="fitMuni()" title="Centralizar no município" aria-label="Centralizar no município"><i class="fa-solid fa-crosshairs"></i></button>
+        <button class="tbtn" onclick="toggleFullscreen(this)" title="Tela cheia (F)" aria-label="Tela cheia" id="btn-fs"><i class="fa-solid fa-expand"></i></button>
+      </div>
       <div class="tb-div"></div>
-      <button class="tbtn" onclick="fitMuni()" title="Centralizar no município" aria-label="Centralizar no município"><i class="fa-solid fa-crosshairs"></i></button>
-      <button class="tbtn" onclick="toggleFullscreen(this)" title="Tela cheia" aria-label="Tela cheia" id="btn-fs"><i class="fa-solid fa-expand"></i></button>
+      <!-- Medição -->
+      <div class="tb-grp" role="group" aria-label="Medição">
+        <button class="tbtn" id="btn-dist" onclick="Measure.start('distance')" title="Medir distância e azimute (D)" aria-label="Medir distância e azimute"><i class="fa-solid fa-ruler"></i></button>
+        <button class="tbtn" id="btn-area" onclick="Measure.start('area')" title="Medir área (A)" aria-label="Medir área"><i class="fa-solid fa-draw-polygon"></i></button>
+      </div>
       <div class="tb-div"></div>
-      <button class="tbtn" id="btn-dist" onclick="Measure.start('distance')" title="Medir distância" aria-label="Medir distância"><i class="fa-solid fa-ruler"></i></button>
-      <button class="tbtn" id="btn-area" onclick="Measure.start('area')" title="Medir área" aria-label="Medir área"><i class="fa-solid fa-draw-polygon"></i></button>
-      <div class="tb-div"></div>
-      <button class="tbtn" id="btn-table" onclick="toggleAttrTable()" title="Tabela de atributos" aria-label="Tabela de atributos"><i class="fa-solid fa-table"></i></button>
-      <button class="tbtn" onclick="printMap()" title="Imprimir / salvar PDF" aria-label="Imprimir ou salvar em PDF"><i class="fa-solid fa-print"></i></button>
+      <!-- Dados / compartilhar -->
+      <div class="tb-grp" role="group" aria-label="Dados e compartilhamento">
+        <button class="tbtn" id="btn-table" onclick="toggleAttrTable()" title="Tabela de atributos (T)" aria-label="Tabela de atributos"><i class="fa-solid fa-table"></i></button>
+        <button class="tbtn" onclick="printMap()" title="Imprimir / salvar PDF" aria-label="Imprimir ou salvar em PDF"><i class="fa-solid fa-print"></i></button>
+        <button class="tbtn" id="btn-swipe" onclick="toggleSwipe()" title="Comparar mapas (cortina)" aria-label="Comparar mapas base lado a lado"><i class="fa-solid fa-table-columns"></i></button>
+        <button class="tbtn" onclick="sharePermalink(this)" title="Compartilhar esta vista (link)" aria-label="Compartilhar link desta vista"><i class="fa-solid fa-share-nodes"></i></button>
+      </div>
       <div class="tb-div"></div>
       <button class="tbtn on" id="btn-coords" onclick="toggleCoords(this)" title="Coordenadas do cursor" aria-label="Coordenadas do cursor"><i class="fa-solid fa-location-dot"></i></button>
     </div>
 
-    <!-- BASEMAP PANEL -->
-    <div id="bmp">
-      <h4><i class="fa-solid fa-map"></i>&nbsp; Mapa Base</h4>
-      <div class="bm-opts">
-        <button class="bm-card on" id="bm-osm" onclick="setBase('osm',this)" title="OpenStreetMap">
-          <canvas id="cv-osm" width="60" height="44"></canvas><span>Ruas</span>
-        </button>
-        <button class="bm-card" id="bm-sat" onclick="setBase('sat',this)" title="Esri World Imagery">
-          <canvas id="cv-sat" width="60" height="44"></canvas><span>Satélite</span>
-        </button>
-        <button class="bm-card" id="bm-topo" onclick="setBase('topo',this)" title="OpenTopoMap">
-          <canvas id="cv-topo" width="60" height="44"></canvas><span>Topográfico</span>
-        </button>
+    <!-- BASEMAP PANEL (colapsável) -->
+    <div id="bmp" class="collapsed">
+      <button id="bmp-toggle" type="button" title="Mapa base" aria-label="Escolher mapa base" onclick="toggleBasemapPanel()"><i class="fa-solid fa-layer-group"></i></button>
+      <div id="bmp-body">
+        <h4 onclick="toggleBasemapPanel()" title="Recolher"><i class="fa-solid fa-map"></i>&nbsp; Mapa Base <i class="fa-solid fa-chevron-down bmp-chev"></i></h4>
+        <div class="bm-opts">
+          <button class="bm-card on" id="bm-osm" onclick="setBase('osm',this)" title="OpenStreetMap">
+            <canvas id="cv-osm" width="60" height="44"></canvas><span>Ruas</span>
+          </button>
+          <button class="bm-card" id="bm-sat" onclick="setBase('sat',this)" title="Satélite (Google)">
+            <canvas id="cv-sat" width="60" height="44"></canvas><span>Satélite</span>
+          </button>
+          <button class="bm-card" id="bm-topo" onclick="setBase('topo',this)" title="OpenTopoMap">
+            <canvas id="cv-topo" width="60" height="44"></canvas><span>Topográfico</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERLAY DE IMPRESSÃO (norte, escala, título) -->
+    <div id="print-info" aria-hidden="true">
+      <div class="pi-north"><i class="fa-solid fa-location-arrow"></i><span>N</span></div>
+      <div class="pi-text">
+        <div class="pi-title">WebGIS Municipal de Carpina — PE</div>
+        <div class="pi-meta"><span id="pi-scale"></span> &middot; <span id="pi-date"></span> &middot; SIRGAS 2000 / UTM 25S</div>
       </div>
     </div>
 
@@ -404,8 +484,9 @@ button{font-family:inherit}
 <!-- STATUS BAR -->
 <div id="stb">
   <span><i class="fa-solid fa-location-crosshairs"></i><span id="coords-txt">Mova o cursor sobre o mapa</span></span>
+  <span id="stb-scale"><i class="fa-solid fa-ruler-horizontal"></i> 1:—</span>
+  <span title="Sistema de referência"><i class="fa-solid fa-globe"></i> SIRGAS 2000 · UTM 25S</span>
   <span id="stb-count"><i class="fa-solid fa-layer-group"></i> — camadas ativas</span>
-  <span><i class="fa-solid fa-database"></i> IBGE / IPTU Carpina</span>
   <span class="r"><i class="fa-solid fa-code"></i>&nbsp; WebGIS &copy; Prefeitura de Carpina <span id="year"></span></span>
 </div>
 
@@ -459,12 +540,13 @@ function reprojectGeoJSON(geojson){
 const LAYER_DEFS=[
   {id:'limites',name:'Limite Municipal (IBGE)',color:'#7B2D8B',kind:'poly',
    url:'./Arquivos_base/Limites_Carpina_IBGE.geojson',fillOpacity:0.07,weight:2.5,
-   title:'Limite Municipal — Carpina (IBGE)',
+   title:'Limite Municipal — Carpina (IBGE)',source:'IBGE',updated:'2022',
    labelFn:()=>'Carpina — PE',
    tableFields:['NM_MUN','SIGLA_UF','NM_REGIAO','AREA_KM2','CD_MUN']},
 
   {id:'lotes',name:'Lotes — Cadastro IPTU',color:'#2563EB',kind:'poly',
    url:'./Arquivos_base/Lote_Cadastro_IPTU.geojson',fillOpacity:0.05,weight:2.2,
+   minZoom:15,zoomStyle:true,source:'Prefeitura / IPTU',updated:'03/2026',
    title:'Lote — Cadastro IPTU',
    labelFn:f=>'Lote IPTU #'+(f.properties.ins_cadastral||f.properties.fid||''),
    searchFields:[{k:'ins_cadastral',ic:'fa-barcode'},{k:'propr_nome',ic:'fa-user'},{k:'imovel_bairro',ic:'fa-location-dot'}],
@@ -472,13 +554,15 @@ const LAYER_DEFS=[
 
   {id:'imoveis_incra',name:'Imóveis INCRA',color:'#16A34A',kind:'poly',
    url:'./Arquivos_base/Imoveis_INCRA_Carpina.geojson',fillOpacity:0.08,weight:1.7,
+   minZoom:13,source:'INCRA / SIGEF',updated:'2024',
    title:'Imóveis INCRA — Carpina',
    labelFn:f=>f.properties.nome_area||f.properties.codigo_imo||'Imóvel INCRA',
    searchFields:[{k:'nome_area',ic:'fa-building'},{k:'codigo_imo',ic:'fa-hashtag'},{k:'registro_m',ic:'fa-file'}],
    tableFields:['nome_area','codigo_imo','parcela_co','situacao_i','status','registro_m','data_aprov']},
 
   {id:'quadra',name:'Quadra Viária',color:'#a83800',kind:'line',
-   url:'./Arquivos_base/Quadra_viaria_Cadastro.geojson',weight:2.2,
+   url:'./Arquivos_base/Quadra_viaria_Cadastro.geojson',weight:2.2,minZoom:15,
+   source:'Prefeitura',updated:'2024',
    title:'Quadra Viária',labelFn:()=>'Quadra viária'},
 
   {id:'setor01',name:'Setor 01',color:'#2563EB',kind:'poly',group:'setores',fillOpacity:0.10,weight:2.4,
@@ -501,7 +585,8 @@ const LAYER_DEFS=[
    labelFn:f=>'Setor 06 · '+(f.properties.NAME||''),searchFields:[{k:'NAME',ic:'fa-vector-square',pre:'Setor 06 — '}],tableFields:['NAME','ENCLOSED_A','PERIMETER']},
 
   {id:'logradouros',name:'Logradouros',color:'#4B5563',kind:'line',weight:1.7,
-   url:'./Arquivos_base/Logradouros_Carpina.geojson',title:'Logradouro',
+   url:'./Arquivos_base/Logradouros_Carpina.geojson',title:'Logradouro',minZoom:14,
+   source:'Prefeitura',updated:'2024',
    labelFn:f=>f.properties.NAME||'Logradouro',
    searchFields:[{k:'NAME',ic:'fa-road'}],tableFields:['NAME','LENGTH','BEARING']}
 ];
@@ -513,12 +598,18 @@ const DEF_BY_ID={};LAYER_DEFS.forEach(d=>DEF_BY_ID[d.id]=d);
 const layers={};          // id -> L.geoJSON (ou featureGroup)
 const layerFeatures={};   // id -> [{props, layer}]
 const SEARCH_INDEX=[];     // {label, sub, icon, defId, layer}
-LAYER_DEFS.forEach(d=>{layerFeatures[d.id]=[];d._opacity=1;});
+LAYER_DEFS.forEach(d=>{
+  layerFeatures[d.id]=[];
+  d._opacity=1;
+  d._wanted=true;                 // intenção do usuário (checkbox)
+  if(d.group==='setores'){d.source=d.source||'Prefeitura';d.updated=d.updated||'2024';}
+});
 
 /* ══════════════════════════════════════════════════════════
    MAPA
    ══════════════════════════════════════════════════════════ */
-const map=L.map('map',{center:[-7.826,-35.310],zoom:12,zoomControl:false,maxZoom:22,
+const map=L.map('map',{center:[-7.826,-35.310],zoom:12,zoomControl:false,minZoom:11,maxZoom:22,
+  maxBoundsViscosity:0.7,
   attributionControl:true,preferCanvas:true /* melhor desempenho c/ muitas feições */});
 
 const baseLayers={
@@ -528,13 +619,40 @@ const baseLayers={
 };
 baseLayers.osm.addTo(map);
 L.control.scale({imperial:false,metric:true,position:'bottomright'}).addTo(map);
+map.attributionControl.addAttribution('Dados: Limites &copy; IBGE · Imóveis rurais &copy; INCRA/SIGEF · Cadastro &copy; Prefeitura de Carpina');
+
+/* Reage a mudança de zoom: reestiliza lotes, aplica visibilidade por escala e atualiza avisos */
+map.on('zoomend',()=>{
+  LAYER_DEFS.forEach(d=>{ if(d.zoomStyle){const l=layers[d.id]; if(l&&l.setStyle) l.setStyle(baseStyle(d));} });
+  reconcileAllLayers();
+  updateLayerStatus();
+  updateLayerHints();
+});
 
 /* ── estilos ── */
 function baseStyle(def){
   const o=def._opacity;
   if(def.kind==='line') return {color:def.color,weight:def.weight,opacity:0.95*o,fillOpacity:0};
+  // Lotes: em zoom médio, preenchimento sutil sem contorno (evita "borrão" de contornos densos);
+  // contorno + preenchimento só em zoom alto.
+  if(def.zoomStyle && map.getZoom()<17){
+    return {color:def.color,weight:0.3,opacity:0.2*o,fillColor:def.color,fillOpacity:Math.max(def.fillOpacity||0,0.14)*o};
+  }
   return {color:def.color,weight:def.weight,opacity:0.95*o,fillColor:def.color,fillOpacity:(def.fillOpacity||0)*o};
 }
+/* ── visibilidade por escala (zoom) ── */
+function layerAllowedAtZoom(def,z){
+  if(def.minZoom!=null && z<def.minZoom) return false;
+  if(def.maxZoom!=null && z>def.maxZoom) return false;
+  return true;
+}
+function applyLayerVisibility(def){
+  const layer=layers[def.id]; if(!layer) return;
+  const show=def._wanted && layerAllowedAtZoom(def,map.getZoom());
+  if(show && !map.hasLayer(layer)) layer.addTo(map);
+  else if(!show && map.hasLayer(layer)) map.removeLayer(layer);
+}
+function reconcileAllLayers(){ LAYER_DEFS.forEach(applyLayerVisibility); }
 
 /* ── criação da camada ── */
 function buildLayer(def,geojson){
@@ -545,8 +663,16 @@ function buildLayer(def,geojson){
       l.on('click',()=>{ if(Measure.active) return; showInfo(f.properties,def.title||def.name,l,def); });
       const lbl=def.labelFn?def.labelFn(f):def.name;
       l.bindTooltip('<strong style="color:'+def.color+'">'+escapeHtml(lbl)+'</strong>',{sticky:true,direction:'top'});
-      l.on('mouseover',()=>l.setStyle({weight:def.weight+1}));
-      l.on('mouseout',()=>{ if(l.setStyle) gj.resetStyle(l); });
+      l.on('mouseover',()=>{
+        if(highlighted&&highlighted.layer===l) return;
+        if(l.setStyle) l.setStyle({weight:def.weight+1.5,fillOpacity:Math.min((def.fillOpacity||0)+0.12,0.5)*def._opacity});
+        if(!Measure.active) map.getContainer().style.cursor='pointer';
+      });
+      l.on('mouseout',()=>{
+        if(highlighted&&highlighted.layer===l) return;   // preserva destaque de seleção
+        if(l.setStyle) gj.resetStyle(l);
+        if(!Measure.active) map.getContainer().style.cursor='';
+      });
       // índice de busca
       if(def.searchFields){
         def.searchFields.forEach(sf=>{
@@ -560,8 +686,10 @@ function buildLayer(def,geojson){
   });
   layers[def.id]=gj;
   const ck=document.getElementById('ck-'+def.id);
-  if(ck&&ck.checked) gj.addTo(map);
+  def._wanted=ck?ck.checked:true;
+  applyLayerVisibility(def);
   updateLayerStatus();
+  updateLayerHints();
   refreshAttrSelect();
 }
 
@@ -577,11 +705,25 @@ function loadLayer(def){
     })
     .finally(()=>{
       pending--;
-      if(pending===0) fitToLimites();
+      if(pending===0){
+        applyMuniConstraints();
+        if(!hasPermalinkView) fitToLimites();
+      }
     });
 }
 function fitToLimites(){
   if(layers.limites){ try{ map.fitBounds(layers.limites.getBounds(),{padding:[30,30]}); }catch(e){} }
+}
+/* Trava o afastamento máximo ao redor do município e limita o deslocamento */
+function applyMuniConstraints(){
+  if(!layers.limites) return;
+  try{
+    const b=layers.limites.getBounds();
+    if(!b||!b.isValid()) return;
+    const fitZoom=map.getBoundsZoom(b,false,L.point(30,30));   // zoom que enquadra Carpina
+    map.setMinZoom(Math.max(3,Math.round(fitZoom)-1));         // permite ~1 nível a mais de afastamento
+    map.setMaxBounds(b.pad(0.5));                              // não deixa arrastar para longe do município
+  }catch(e){}
 }
 LAYER_DEFS.forEach(loadLayer);
 
@@ -591,7 +733,10 @@ LAYER_DEFS.forEach(loadLayer);
 function renderLayerControls(){
   const host=document.getElementById('s-layers');
   let html='';
-  const dot=d=>'<span class="lyr-dot" style="background:'+d.color+(d.kind==='line'?';border-color:'+d.color:';border-color:'+d.color)+';opacity:.85"></span>';
+  // amostra fiel à simbologia real: traço p/ linha, quadrado preenchido p/ polígono
+  const dot=d=> d.kind==='line'
+    ? '<span class="lyr-dot" style="height:0;width:16px;border:none;border-radius:0;border-top:3px solid '+d.color+'"></span>'
+    : '<span class="lyr-dot" style="background:'+d.color+((d.fillOpacity||0)<0.06?'26':'55')+';border-color:'+d.color+'"></span>';
   const rowInner=d=>
     '<input type="checkbox" id="ck-'+d.id+'" checked aria-label="'+escapeHtml(d.name)+'" onchange="toggleLayer(\''+d.id+'\',this)">'+
     dot(d)+
@@ -599,40 +744,38 @@ function renderLayerControls(){
     '<button class="lyr-action" type="button" title="Zoom para a camada" aria-label="Zoom para '+escapeHtml(d.name)+'" onclick="zoomToLayer(\''+d.id+'\')"><i class="fa-solid fa-magnifying-glass"></i></button>';
   const opacityRow=d=>
     '<div class="opa-row"><i class="fa-solid fa-droplet"></i>'+
-    '<input type="range" min="0" max="100" value="100" aria-label="Opacidade '+escapeHtml(d.name)+'" oninput="setLayerOpacity(\''+d.id+'\',this.value)"></div>';
+    '<input type="range" min="0" max="100" value="100" aria-label="Opacidade '+escapeHtml(d.name)+'" oninput="setLayerOpacity(\''+d.id+'\',this)"><span class="opa-val">100%</span></div>';
+  const zoomNote=d=> d.minZoom==null?'':
+    '<div class="zoom-note" id="zn-'+d.id+'"><i class="fa-solid fa-magnifying-glass-plus"></i> Aparece ao aproximar (zoom '+d.minZoom+'+)</div>';
+  const metaRow=d=> !d.updated?'':
+    '<div class="lyr-meta">'+(d.source?escapeHtml(d.source)+' · ':'')+'atualizado '+escapeHtml(d.updated)+'</div>';
+  const block=(d,child)=>
+    '<div class="lyr-block'+(child?' child':'')+'" id="blk-'+d.id+'"><div class="lyr">'+rowInner(d)+'</div>'+
+    opacityRow(d)+zoomNote(d)+metaRow(d)+'</div>';
 
   LAYER_DEFS.forEach(d=>{
     if(d.group==='setores') return; // tratados no bloco de grupo
-    html+='<div class="lyr-block"><div class="lyr">'+rowInner(d)+'</div>'+opacityRow(d)+'</div>';
+    html+=block(d,false);
     if(d.id==='quadra'){
-      // insere o grupo de setores logo após "quadra"
+      // grupo de setores (com legenda de cores real embutida)
+      const sets=LAYER_DEFS.filter(s=>s.group==='setores');
+      const swatches=sets.map(s=>'<span class="sw"><i style="background:'+s.color+'"></i>'+escapeHtml(s.name)+'</span>').join('');
       html+='<div class="lyr-block"><div class="lyr lyr-group" >'+
         '<input type="checkbox" id="ck-setores-group" checked aria-label="Todos os setores" onchange="toggleSectorGroup(this)">'+
-        '<span class="lyr-dot" style="background:linear-gradient(135deg,#2563EB,#DC2626);border-color:#7B2D8B"></span>'+
+        '<span class="lyr-dot" style="background:linear-gradient(135deg,#2563EB,#7C3AED,#059669,#F59E0B,#DC2626);border-color:#7B2D8B"></span>'+
         '<span class="lyr-name" onclick="toggleSectorList()"><strong>Setores (todos)</strong></span>'+
         '<button class="lyr-action" type="button" id="setores-toggle" title="Expandir/recolher setores" aria-label="Expandir ou recolher lista de setores" aria-expanded="false" onclick="toggleSectorList()"><i class="fa-solid fa-chevron-down" id="setores-arrow" style="transform:rotate(-90deg)"></i></button>'+
-        '</div>';
+        '</div>'+
+        '<div class="lyr-swatch-multi">'+swatches+'</div>';
       html+='<div id="setores-children" class="collapsed">';
-      LAYER_DEFS.filter(s=>s.group==='setores').forEach(s=>{
-        html+='<div class="lyr-block child"><div class="lyr">'+rowInner(s)+'</div>'+opacityRow(s)+'</div>';
-      });
+      sets.forEach(s=>{ html+=block(s,true); });
       html+='</div>';
       html+='</div>';
     }
   });
   host.innerHTML=html;
 }
-function renderLegend(){
-  const host=document.getElementById('s-legend');
-  host.innerHTML=LAYER_DEFS.map(d=>{
-    const sw=d.kind==='line'
-      ? '<span class="leg-clr line" style="width:22px;border-top-color:'+d.color+'"></span>'
-      : '<span class="leg-clr" style="background:'+d.color+((d.fillOpacity||0)<0.06?'22':'55')+';border-color:'+d.color+'"></span>';
-    return '<div class="leg-row">'+sw+'<span>'+escapeHtml(d.name)+'</span></div>';
-  }).join('');
-}
 renderLayerControls();
-renderLegend();
 
 /* ══════════════════════════════════════════════════════════
    CONTROLE DE CAMADAS
@@ -643,16 +786,26 @@ function updateLayerStatus(){
   el.innerHTML='<i class="fa-solid fa-layer-group"></i> '+active+' camada'+(active!==1?'s':'')+' ativa'+(active!==1?'s':'');
 }
 function toggleLayer(id,src){
-  const layer=layers[id];const ck=document.getElementById('ck-'+id);
+  const ck=document.getElementById('ck-'+id);
   if(!ck) return;
   const on=src&&src.type==='checkbox'?src.checked:!ck.checked;
   ck.checked=on;
-  if(layer){
-    if(on&&!map.hasLayer(layer)) layer.addTo(map);
-    else if(!on&&map.hasLayer(layer)) map.removeLayer(layer);
-  }
-  if(DEF_BY_ID[id]&&DEF_BY_ID[id].group==='setores') syncSectorMaster();
+  const def=DEF_BY_ID[id];
+  if(def){def._wanted=on;applyLayerVisibility(def);}
+  if(def&&def.group==='setores') syncSectorMaster();
   updateLayerStatus();
+  updateLayerHints();
+}
+/* Mostra/oculta os avisos "aparece ao aproximar" conforme o zoom atual */
+function updateLayerHints(){
+  const z=map.getZoom();
+  LAYER_DEFS.forEach(d=>{
+    const note=document.getElementById('zn-'+d.id);
+    const block=document.getElementById('blk-'+d.id);
+    const hidden=d._wanted && !layerAllowedAtZoom(d,z);
+    if(note) note.classList.toggle('show',hidden);
+    if(block) block.classList.toggle('dim',hidden);
+  });
 }
 function toggleSectorGroup(src){
   const master=document.getElementById('ck-setores-group');
@@ -662,6 +815,7 @@ function toggleSectorGroup(src){
     const ck=document.getElementById('ck-'+d.id);if(ck){ck.checked=on;toggleLayer(d.id,ck);}
   });
   updateLayerStatus();
+  updateLayerHints();
 }
 function toggleSectorList(){
   const c=document.getElementById('setores-children');if(!c)return;
@@ -676,15 +830,21 @@ function syncSectorMaster(){
   const master=document.getElementById('ck-setores-group');if(!master)return;
   master.checked=LAYER_DEFS.filter(d=>d.group==='setores').every(d=>{const c=document.getElementById('ck-'+d.id);return c&&c.checked;});
 }
-function setLayerOpacity(id,val){
+function setLayerOpacity(id,input){
   const def=DEF_BY_ID[id];const layer=layers[id];
+  const val=typeof input==='object'?input.value:input;
   def._opacity=val/100;
   if(layer&&layer.setStyle) layer.setStyle(baseStyle(def));
+  if(typeof input==='object'){
+    const v=input.parentElement.querySelector('.opa-val');
+    if(v) v.textContent=Math.round(val)+'%';
+  }
 }
 function zoomToLayer(id){
-  const layer=layers[id];const ck=document.getElementById('ck-'+id);
+  const layer=layers[id];const ck=document.getElementById('ck-'+id);const def=DEF_BY_ID[id];
   if(!layer)return;
-  if(!map.hasLayer(layer)){if(ck)ck.checked=true;layer.addTo(map);updateLayerStatus();}
+  if(def)def._wanted=true; if(ck)ck.checked=true;
+  applyLayerVisibility(def); updateLayerStatus(); updateLayerHints();
   try{const b=layer.getBounds();if(b&&b.isValid())map.fitBounds(b,{padding:[30,30]});}catch(e){}
 }
 function fitMuni(){fitToLimites();}
@@ -700,8 +860,11 @@ const LABELS={
   NAME:'Nome',LENGTH:'Comprimento',PERIMETER:'Perímetro',ENCLOSED_A:'Área'
 };
 let highlighted=null;
+let selectedFeature=null;   // {props, layer, def} — feição atualmente selecionada
 function showInfo(props,title,layer,def){
-  let html='<div class="fi-title">'+escapeHtml(title)+'</div><table class="fi-tbl">';
+  let html='<div class="fi-title">'+escapeHtml(title)+'</div>';
+  if(def&&def.updated) html+='<div class="fi-src"><i class="fa-solid fa-database"></i> '+(def.source?escapeHtml(def.source)+' · ':'')+'atualizado '+escapeHtml(def.updated)+'</div>';
+  html+='<table class="fi-tbl">';
   let has=false;
   for(const k in props){
     const v=props[k];
@@ -710,16 +873,39 @@ function showInfo(props,title,layer,def){
     html+='<tr><td>'+escapeHtml(LABELS[k]||prettyLabel(k))+'</td><td>'+escapeHtml(v)+'</td></tr>';
   }
   html+='</table>';
-  if(!has) html='<div class="fi-title">'+escapeHtml(title)+'</div><p style="color:#999;font-size:11.5px;font-style:italic">Sem atributos preenchidos para esta feição.</p>';
+  if(!has) html+='<p style="color:#999;font-size:11.5px;font-style:italic">Sem atributos preenchidos para esta feição.</p>';
   document.getElementById('fi-body').innerHTML=html;
-  if(layer) highlightFeature(layer,def);
+  selectedFeature={props:props||{},layer:layer||null,def:def||null};
+  openInfoPanel();
+  if(layer){ highlightFeature(layer,def); flashFeature(layer); }
+}
+function openInfoPanel(){
+  const p=document.getElementById('fi-panel');
+  p.classList.add('open'); p.setAttribute('aria-hidden','false');
+}
+function closeInfo(){
+  const p=document.getElementById('fi-panel');
+  p.classList.remove('open'); p.setAttribute('aria-hidden','true');
+  clearHighlight(); selectedFeature=null;
 }
 function highlightFeature(layer,def){
   clearHighlight();
   if(!layer.setStyle) return;
   highlighted={layer,def:def||null,parent:layers[def&&def.id]};
-  layer.setStyle({color:'#FFB300',weight:5,opacity:1,fillColor:'#FFD54F',fillOpacity:0.35});
+  layer.setStyle({color:'#00E5FF',weight:5,opacity:1,fillColor:'#00E5FF',fillOpacity:0.25});
   if(layer.bringToFront) layer.bringToFront();
+}
+/* flash rápido de seleção (piscar) */
+function flashFeature(layer){
+  if(!layer.setStyle) return;
+  let n=0;
+  const on={color:'#FFEB3B',weight:6,opacity:1,fillColor:'#FFEB3B',fillOpacity:0.45};
+  const off={color:'#00E5FF',weight:5,opacity:1,fillColor:'#00E5FF',fillOpacity:0.25};
+  const t=setInterval(()=>{
+    if(!highlighted||highlighted.layer!==layer){clearInterval(t);return;}
+    layer.setStyle(n%2===0?on:off);
+    if(++n>=4){clearInterval(t);layer.setStyle(off);}
+  },130);
 }
 function clearHighlight(){
   if(highlighted&&highlighted.layer&&highlighted.parent&&highlighted.parent.resetStyle){
@@ -751,12 +937,41 @@ function paintActive(){
   [...searchResults.children].forEach((li,i)=>li.classList.toggle('active',i===searchActiveIdx));
   const el=searchResults.children[searchActiveIdx];if(el)el.scrollIntoView({block:'nearest'});
 }
+/* Reconhece coordenadas coladas: decimais (lat,lon) ou UTM SIRGAS 2000 zona 25S (E,N) */
+function parseCoord(raw){
+  let s=(raw||'').trim();
+  if(!s) return null;
+  s=s.replace(/lat[itude]*[:=]?/ig,' ').replace(/lon[gitude]*[:=]?/ig,' ');
+  if(/\d,\d/.test(s)&&!/\.\d/.test(s)) s=s.replace(/(\d),(\d)/g,'$1.$2'); // vírgula decimal → ponto
+  const nums=(s.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);
+  if(nums.length<2) return null;
+  let a=nums[0],b=nums[1];
+  if(Math.abs(a)>1000||Math.abs(b)>1000){          // UTM
+    let e,n; if(Math.abs(a)>Math.abs(b)){n=a;e=b;}else{e=a;n=b;}
+    try{const [lon,lat]=proj4('EPSG:31985','EPSG:4326',[e,n]);
+      if(isFinite(lat)&&isFinite(lon)&&Math.abs(lat)<=90) return {lat,lon,kind:'UTM 25S · SIRGAS 2000'};}catch(err){}
+    return null;
+  }
+  let lat=a,lon=b;
+  if(Math.abs(lat)>90&&Math.abs(lon)<=90){lat=b;lon=a;}
+  if(Math.abs(lat)>90||Math.abs(lon)>180) return null;
+  return {lat,lon,kind:'Lat/Lon · WGS84'};
+}
+let searchMarker=null;
+function dropSearchMarker(lat,lon,label){
+  if(searchMarker) map.removeLayer(searchMarker);
+  searchMarker=L.marker([lat,lon]).addTo(map).bindPopup('<strong>Coordenada</strong><br>'+escapeHtml(label)).openPopup();
+}
 function runSearch(){
-  const q=normalize(searchInput.value.trim());
+  const raw=searchInput.value.trim();
+  const q=normalize(raw);
   searchResults.innerHTML='';searchActiveIdx=-1;searchMatches=[];
   searchInput.setAttribute('aria-expanded','false');
   if(q.length<2) return;
-  const matches=SEARCH_INDEX.filter(e=>normalize(e.label).includes(q)).slice(0,40);
+  const matches=[];
+  const coord=parseCoord(raw);
+  if(coord) matches.push({coord,label:coord.lat.toFixed(6)+', '+coord.lon.toFixed(6),sub:'Ir para coordenada · '+coord.kind,icon:'fa-location-crosshairs'});
+  SEARCH_INDEX.filter(e=>normalize(e.label).includes(q)).slice(0,40).forEach(m=>matches.push(m));
   searchMatches=matches;
   if(!matches.length){searchResults.innerHTML='<div id="search-empty">Nenhum resultado encontrado.</div>';return;}
   searchInput.setAttribute('aria-expanded','true');
@@ -770,8 +985,14 @@ function runSearch(){
   });
 }
 function gotoResult(m){
-  const layer=layers[m.defId];const ck=document.getElementById('ck-'+m.defId);
-  if(layer&&!map.hasLayer(layer)){if(ck)ck.checked=true;layer.addTo(map);updateLayerStatus();}
+  if(m.coord){
+    map.setView([m.coord.lat,m.coord.lon],18);
+    dropSearchMarker(m.coord.lat,m.coord.lon,m.label);
+    if(window.innerWidth<=760) closeSidebarMobile();
+    return;
+  }
+  const layer=layers[m.defId];const ck=document.getElementById('ck-'+m.defId);const sdef=DEF_BY_ID[m.defId];
+  if(sdef){sdef._wanted=true;if(ck)ck.checked=true;applyLayerVisibility(sdef);updateLayerStatus();}
   const target=m.layer;
   try{
     if(target.getBounds){map.fitBounds(target.getBounds(),{padding:[60,60],maxZoom:19});}
@@ -786,6 +1007,28 @@ function clearSearch(){
   document.getElementById('search-clear').style.display='none';
   searchInput.setAttribute('aria-expanded','false');searchInput.focus();
 }
+function focusSearch(){
+  const sb=document.getElementById('sb');
+  if(sb.classList.contains('closed')) toggleSidebar();
+  const sec=document.getElementById('s-search');
+  if(sec&&sec.classList.contains('hidden')) toggleSec('s-search',sec.previousElementSibling);
+  if(window.innerWidth<=760) openSheet();
+  searchInput.focus();searchInput.select();
+}
+/* Atalhos de teclado */
+document.addEventListener('keydown',e=>{
+  const tag=(e.target.tagName||'').toLowerCase();
+  const typing=tag==='input'||tag==='textarea'||tag==='select';
+  if((e.key==='k'||e.key==='K')&&(e.ctrlKey||e.metaKey)){e.preventDefault();focusSearch();return;}
+  if(typing||e.ctrlKey||e.metaKey||e.altKey) return;
+  switch(e.key){
+    case '/': e.preventDefault();focusSearch();break;
+    case 'd': case 'D': Measure.start('distance');break;
+    case 'a': case 'A': Measure.start('area');break;
+    case 't': case 'T': toggleAttrTable();break;
+    case 'f': case 'F': toggleFullscreen(document.getElementById('btn-fs'));break;
+  }
+});
 
 /* ══════════════════════════════════════════════════════════
    MEDIÇÃO (distância e área)
@@ -834,7 +1077,12 @@ const Measure={
     const box=document.getElementById('measure-value');
     if(this.active==='distance'){
       let d=0;for(let i=1;i<pts.length;i++)d+=pts[i-1].distanceTo(pts[i]);
-      box.textContent=d>=1000?(d/1000).toFixed(2)+' km':d.toFixed(1)+' m';
+      let txt=d>=1000?(d/1000).toFixed(2)+' km':d.toFixed(1)+' m';
+      if(pts.length>=2){                        // azimute do último segmento (público técnico)
+        const az=bearingDeg(pts[pts.length-2],pts[pts.length-1]);
+        txt+='   ·   Az '+az.toFixed(1)+'°';
+      }
+      box.textContent=txt;
     }else{
       const a=pts.length>=3?geodesicArea(pts):0;
       box.textContent=a>=1e6?(a/1e6).toFixed(3)+' km²':a.toFixed(1)+' m²';
@@ -858,6 +1106,13 @@ const Measure={
     document.getElementById('btn-area').classList.remove('on');
   }
 };
+/* azimute (rumo) verdadeiro de A para B, em graus (0 = Norte) */
+function bearingDeg(a,b){
+  const d2r=Math.PI/180,r2d=180/Math.PI;
+  const y=Math.sin((b.lng-a.lng)*d2r)*Math.cos(b.lat*d2r);
+  const x=Math.cos(a.lat*d2r)*Math.sin(b.lat*d2r)-Math.sin(a.lat*d2r)*Math.cos(b.lat*d2r)*Math.cos((b.lng-a.lng)*d2r);
+  return (Math.atan2(y,x)*r2d+360)%360;
+}
 function geodesicArea(latlngs){
   const R=6378137,d2r=Math.PI/180;let area=0;
   for(let i=0;i<latlngs.length;i++){
@@ -930,18 +1185,165 @@ function exportTable(fmt){
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download=def.id+'_export.'+ext;a.click();URL.revokeObjectURL(a.href);
 }
+function downloadBlob(content,mime,filename){
+  const blob=new Blob([content],{type:mime});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+/* ── exportação da feição selecionada (GeoJSON / KML) ── */
+function exportSelected(fmt){
+  if(!selectedFeature||!selectedFeature.layer||!selectedFeature.layer.toGeoJSON){alert('Selecione uma feição no mapa primeiro.');return;}
+  const gj=selectedFeature.layer.toGeoJSON();
+  gj.properties=selectedFeature.props||gj.properties||{};
+  const def=selectedFeature.def||{};
+  const base=(def.id||'feicao')+'_selecao';
+  if(fmt==='geojson'){
+    downloadBlob(JSON.stringify({type:'FeatureCollection',features:[gj]}),'application/geo+json',base+'.geojson');
+  }else{
+    downloadBlob(geojsonToKml(gj,def.title||def.name||'Feição'),'application/vnd.google-earth.kml+xml',base+'.kml');
+  }
+}
+function geojsonToKml(feature,name){
+  const g=feature.geometry||{};
+  const ring=coords=>coords.map(c=>c[0]+','+c[1]+',0').join(' ');
+  const desc=Object.entries(feature.properties||{}).filter(([,v])=>v!=null&&v!=='')
+    .map(([k,v])=>'<b>'+escapeHtml(LABELS[k]||prettyLabel(k))+':</b> '+escapeHtml(v)).join('<br/>');
+  let geomKml='';
+  const polyKml=poly=>'<Polygon><outerBoundaryIs><LinearRing><coordinates>'+ring(poly[0])+'</coordinates></LinearRing></outerBoundaryIs></Polygon>';
+  if(g.type==='Point') geomKml='<Point><coordinates>'+g.coordinates[0]+','+g.coordinates[1]+',0</coordinates></Point>';
+  else if(g.type==='LineString') geomKml='<LineString><coordinates>'+ring(g.coordinates)+'</coordinates></LineString>';
+  else if(g.type==='Polygon') geomKml=polyKml(g.coordinates);
+  else if(g.type==='MultiPolygon') geomKml='<MultiGeometry>'+g.coordinates.map(polyKml).join('')+'</MultiGeometry>';
+  else if(g.type==='MultiLineString') geomKml='<MultiGeometry>'+g.coordinates.map(c=>'<LineString><coordinates>'+ring(c)+'</coordinates></LineString>').join('')+'</MultiGeometry>';
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document>'+
+    '<Placemark><name>'+escapeHtml(name)+'</name><description><![CDATA['+desc+']]></description>'+geomKml+'</Placemark></Document></kml>';
+}
+/* ── Street View no ponto da feição ── */
+function openStreetView(){
+  if(!selectedFeature||!selectedFeature.layer){alert('Selecione uma feição no mapa primeiro.');return;}
+  let c;
+  try{
+    const l=selectedFeature.layer;
+    c=l.getBounds?l.getBounds().getCenter():(l.getLatLng?l.getLatLng():null);
+  }catch(e){}
+  if(!c){alert('Não foi possível localizar o centro da feição.');return;}
+  window.open('https://www.google.com/maps/@?api=1&map_action=pano&viewpoint='+c.lat+','+c.lng,'_blank','noopener');
+}
 
 /* ══════════════════════════════════════════════════════════
    MAPA BASE / IMPRESSÃO / DIVERSOS
    ══════════════════════════════════════════════════════════ */
 function setBase(key,card){
+  if(swipe.active) endSwipe();
   Object.values(baseLayers).forEach(l=>map.hasLayer(l)&&map.removeLayer(l));
   document.querySelectorAll('.bm-card').forEach(c=>c.classList.remove('on'));
   baseLayers[key].addTo(map);
-  card.classList.add('on');
+  if(card) card.classList.add('on');
   LAYER_DEFS.forEach(d=>{const l=layers[d.id];if(l&&map.hasLayer(l)){map.removeLayer(l);l.addTo(map);}});
 }
-function printMap(){setTimeout(()=>window.print(),120);}
+function setBaseByKey(key){const card=document.getElementById('bm-'+key);if(card)setBase(key,card);}
+function toggleBasemapPanel(){document.getElementById('bmp').classList.toggle('collapsed');}
+function currentBaseKey(){for(const k in baseLayers) if(map.hasLayer(baseLayers[k])) return k; return 'osm';}
+function printMap(){
+  const sc=document.getElementById('stb-scale');
+  document.getElementById('pi-scale').textContent='Escala aprox. '+(sc?sc.textContent.replace(/^.*?1:/,'1:'):'');
+  const d=new Date();
+  document.getElementById('pi-date').textContent=d.toLocaleDateString('pt-BR');
+  setTimeout(()=>window.print(),150);
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPARADOR DE MAPAS (cortina / swipe)
+   ══════════════════════════════════════════════════════════ */
+let swipe={active:false,layer:null,divider:null,pos:0.5};
+function toggleSwipe(){
+  const btn=document.getElementById('btn-swipe');
+  if(swipe.active){endSwipe();return;}
+  if(!map.getPane('swipePane')){const p=map.createPane('swipePane');p.style.zIndex=250;}
+  const compKey=map.hasLayer(baseLayers.sat)?'osm':'sat';   // compara base atual x satélite (ou ruas)
+  swipe.layer=(compKey==='sat')
+    ? L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{subdomains:['mt0','mt1','mt2','mt3'],pane:'swipePane',maxNativeZoom:21,maxZoom:22})
+    : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{pane:'swipePane',maxNativeZoom:19,maxZoom:22});
+  swipe.layer.addTo(map);
+  const d=document.createElement('div');d.id='swipe-divider';
+  d.innerHTML='<span class="sd-handle"><i class="fa-solid fa-left-right"></i></span>'+
+    '<span class="sd-tag sd-l">'+(compKey==='sat'?'Mapa atual':'Satélite')+'</span>'+
+    '<span class="sd-tag sd-r">'+(compKey==='sat'?'Satélite':'Ruas (OSM)')+'</span>';
+  document.getElementById('mc').appendChild(d);
+  swipe.divider=d;swipe.active=true;swipe.pos=0.5;
+  if(btn)btn.classList.add('on');
+  const start=ev=>{ev.preventDefault();document.addEventListener('pointermove',drag);document.addEventListener('pointerup',stop);};
+  const drag=ev=>{const r=map.getContainer().getBoundingClientRect();swipe.pos=Math.min(1,Math.max(0,(ev.clientX-r.left)/r.width));updateSwipeClip();};
+  const stop=()=>{document.removeEventListener('pointermove',drag);document.removeEventListener('pointerup',stop);};
+  d.addEventListener('pointerdown',start);
+  swipe._drag=drag;swipe._stop=stop;
+  map.on('move zoom zoomanim viewreset',updateSwipeClip);
+  updateSwipeClip();
+}
+function updateSwipeClip(){
+  if(!swipe.active||!swipe.layer)return;
+  const pane=map.getPane('swipePane');
+  const size=map.getSize();
+  const nw=map.containerPointToLayerPoint([0,0]);
+  const se=map.containerPointToLayerPoint([size.x,size.y]);
+  const clipX=nw.x+(se.x-nw.x)*swipe.pos;
+  pane.style.clip='rect('+nw.y+'px,'+se.x+'px,'+se.y+'px,'+clipX+'px)';   // mostra a camada só à direita da cortina
+  if(swipe.divider) swipe.divider.style.left=(swipe.pos*size.x)+'px';
+}
+function endSwipe(){
+  if(swipe.layer)map.removeLayer(swipe.layer);swipe.layer=null;
+  if(swipe.divider)swipe.divider.remove();swipe.divider=null;
+  const pane=map.getPane('swipePane');if(pane)pane.style.clip='';
+  map.off('move zoom zoomanim viewreset',updateSwipeClip);
+  swipe.active=false;
+  const btn=document.getElementById('btn-swipe');if(btn)btn.classList.remove('on');
+}
+
+/* ══════════════════════════════════════════════════════════
+   PERMALINK / COMPARTILHAR (estado na URL)
+   ══════════════════════════════════════════════════════════ */
+function buildPermalink(){
+  const c=map.getCenter();
+  const active=LAYER_DEFS.filter(d=>d._wanted).map(d=>d.id);
+  const p=new URLSearchParams();
+  p.set('z',map.getZoom());
+  p.set('c',c.lat.toFixed(6)+','+c.lng.toFixed(6));
+  p.set('base',currentBaseKey());
+  p.set('layers',active.join(','));
+  return location.origin+location.pathname+'#'+p.toString();
+}
+function sharePermalink(btn){
+  const url=buildPermalink();
+  history.replaceState(null,'','#'+url.split('#')[1]);
+  const flag=ok=>{if(btn){const i=btn.querySelector('i'),old=i.className;i.className=ok?'fa-solid fa-check':'fa-solid fa-triangle-exclamation';setTimeout(()=>i.className=old,1500);}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(()=>flag(true),()=>{prompt('Copie o link desta vista:',url);flag(true);});
+  }else{prompt('Copie o link desta vista:',url);flag(true);}
+}
+let hasPermalinkView=false;
+function applyPermalink(){
+  if(!location.hash||location.hash.length<2) return;
+  const p=new URLSearchParams(location.hash.slice(1));
+  const base=p.get('base'); if(base&&baseLayers[base]) setBaseByKey(base);
+  const layersP=p.get('layers');
+  if(layersP!=null){
+    const set=new Set(layersP?layersP.split(','):[]);
+    LAYER_DEFS.forEach(d=>{const on=set.has(d.id);d._wanted=on;const ck=document.getElementById('ck-'+d.id);if(ck)ck.checked=on;});
+    syncSectorMaster();
+  }
+  const c=p.get('c'),z=p.get('z');
+  if(c&&z){const parts=c.split(',').map(Number);if(isFinite(parts[0])&&isFinite(parts[1])){map.setView([parts[0],parts[1]],Number(z));hasPermalinkView=true;}}
+}
+
+/* escala numérica aproximada (1:N) a partir do zoom/latitude */
+function updateScaleReadout(){
+  const el=document.getElementById('stb-scale'); if(!el) return;
+  const lat=map.getCenter().lat*Math.PI/180;
+  const mpp=40075016.686*Math.abs(Math.cos(lat))/Math.pow(2,map.getZoom()+8); // metros por pixel
+  const denom=Math.round(mpp/0.0002645833);                                   // 1px ≈ 0,2646 mm (96 dpi)
+  el.innerHTML='<i class="fa-solid fa-ruler-horizontal"></i> 1:'+denom.toLocaleString('pt-BR');
+}
+map.on('zoomend moveend',updateScaleReadout);
 
 let showCoords=true;
 function toggleCoords(btn){
@@ -972,8 +1374,64 @@ function toggleSidebar(){
   setTimeout(()=>map.invalidateSize(),300);
 }
 function closeSidebarMobile(){
-  if(window.innerWidth<=760){document.getElementById('sb').classList.add('closed');document.getElementById('tog-icon').className='fa-solid fa-chevron-right';}
+  if(window.innerWidth<=760) setSheet('peek');
 }
+function onBackdrop(){
+  if(window.innerWidth<=760) setSheet('peek');
+  else toggleSidebar();
+}
+
+/* ── BOTTOM SHEET (mobile) ── */
+let sheetState='peek';
+function setSheet(state){
+  const sb=document.getElementById('sb');
+  sb.style.transition=''; sb.style.transform='';
+  sb.classList.remove('sheet-half','sheet-full','closed');
+  if(state==='half') sb.classList.add('sheet-half');
+  else if(state==='full') sb.classList.add('sheet-full');
+  else if(state==='closed') sb.classList.add('closed');
+  sheetState=state;
+  setTimeout(()=>map.invalidateSize(),320);
+}
+function openSheet(){ if(sheetState==='peek'||sheetState==='closed') setSheet('half'); }
+function cycleSheet(){ setSheet(sheetState==='peek'?'half':sheetState==='half'?'full':'peek'); }
+(function initSheet(){
+  const sb=document.getElementById('sb');
+  const handle=document.getElementById('sheet-handle');
+  if(!handle) return;
+  let dragging=false,startY=0,startTr=0,moved=false;
+  const H=()=>sb.offsetHeight||Math.round(window.innerHeight*0.86);
+  const stateTr=()=>({peek:H()-104,half:H()*0.45,full:0,closed:H()}[sheetState]);
+  const onDown=e=>{
+    if(window.innerWidth>760) return;
+    dragging=true;moved=false;startY=e.clientY;startTr=stateTr();
+    sb.style.transition='none';
+    try{handle.setPointerCapture(e.pointerId);}catch(_){}
+  };
+  const onMove=e=>{
+    if(!dragging) return;
+    const dy=e.clientY-startY; if(Math.abs(dy)>4) moved=true;
+    const tr=Math.max(0,Math.min(H(),startTr+dy));
+    sb.style.transform='translateY('+tr+'px)';
+  };
+  const onUp=e=>{
+    if(!dragging) return; dragging=false;
+    sb.style.transition='';
+    if(!moved){ sb.style.transform=''; cycleSheet(); return; }
+    const dy=((e.clientY!=null?e.clientY:startY))-startY;
+    const tr=Math.max(0,Math.min(H(),startTr+dy));
+    const snaps=[['full',0],['half',H()*0.45],['peek',H()-104]];  // 'peek' é o mínimo — alça sempre visível
+    let best=snaps[2],bd=Infinity;
+    snaps.forEach(s=>{const d=Math.abs(tr-s[1]);if(d<bd){bd=d;best=s;}});
+    sb.style.transform='';
+    setSheet(best[0]);
+  };
+  handle.addEventListener('pointerdown',onDown);
+  handle.addEventListener('pointermove',onMove);
+  handle.addEventListener('pointerup',onUp);
+  handle.addEventListener('pointercancel',onUp);
+  handle.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cycleSheet();}});
+})();
 function toggleSec(id,hdr){
   const el=document.getElementById(id);
   el.classList.toggle('hidden');
@@ -1002,7 +1460,10 @@ function drawThumb(){
   x3.fillStyle='#4caf50';x3.fillRect(8,8,6,10);x3.fillRect(18,5,6,12);x3.fillRect(28,9,6,9);
 }
 drawThumb();
+applyPermalink();
 updateLayerStatus();
+updateLayerHints();
+updateScaleReadout();
 </script>
 </body>
 </html>
